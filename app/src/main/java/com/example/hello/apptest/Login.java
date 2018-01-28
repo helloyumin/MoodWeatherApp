@@ -3,7 +3,6 @@ package com.example.hello.apptest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -26,12 +25,12 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        et_id = (EditText) findViewById(R.id.et_id);
-        et_pwd = (EditText) findViewById(R.id.et_pwd1);
-        auto_login = (CheckBox) findViewById(R.id.check_auto);
-        btn_help = (Button) findViewById(R.id.btn_help);
-        btn_login = (Button) findViewById(R.id.btn_login);
-        btn_reg = (Button) findViewById(R.id.btn_reg);
+        et_id = findViewById(R.id.et_id);
+        et_pwd = findViewById(R.id.et_pwd1);
+        auto_login = findViewById(R.id.check_auto);
+        btn_help = findViewById(R.id.btn_help);
+        btn_login = findViewById(R.id.btn_login);
+        btn_reg = findViewById(R.id.btn_reg);
 
         btn_help.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,9 +58,12 @@ public class Login extends AppCompatActivity {
     public void login(){
         initialize();
         if(!validate()){
-            Toast.makeText(this, "로그인 실패", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "아이디와 비밀번호를 확인하세요", Toast.LENGTH_LONG).show();
         } else {
-            loginSuccess();
+//            loginSuccess();
+            loginRequest();
+            Intent intent3 = new Intent(Login.this, MoodQ.class);
+            startActivity(intent3);
         }
     }
 
@@ -76,14 +78,18 @@ public class Login extends AppCompatActivity {
             et_id.setError("ID를 입력하세요");
             valid = false;
         }
-        if (pwd.isEmpty()){
+        else if (pwd.isEmpty()){
             et_pwd.setError("비밀번호를 입력하세요");
+            valid = false;
+        }
+        else if(!id.equals("haku@gmail.com") || !pwd.equals("1234")){
             valid = false;
         }
         return valid;
     }
 
-    public void loginSuccess(){
+    public void loginRequest(){
+        // Send Json to server
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("ID", id);
@@ -91,11 +97,21 @@ public class Login extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        loginResponse(jsonObject);
 
-        String login_data = jsonObject.toString();
-        Toast.makeText(getApplicationContext(), login_data, Toast.LENGTH_LONG).show();
-        Intent intent3 = new Intent(Login.this, MoodQ.class);
-        startActivity(intent3);
     }
+
+    private void loginResponse(JSONObject loginRes) {
+            // get reply
+            try {
+                loginRes.get(id);
+                loginRes.get(pwd);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String login_data = loginRes.toString();
+            Toast.makeText(getApplication(), login_data, Toast.LENGTH_LONG).show();
+    }
+
 
 }
