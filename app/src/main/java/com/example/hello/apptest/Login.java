@@ -3,6 +3,7 @@ package com.example.hello.apptest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,10 @@ public class Login extends AppCompatActivity {
     CheckBox auto_login;
     Button btn_help, btn_reg, btn_login;
     String id, pwd;
+    String JSONTag_id="ID";
+    String JSONTag_Passwd="password";
+    String intent_mood1 = "LOGIN";
+    private BackPressCloseHandler backPressCloseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,8 @@ public class Login extends AppCompatActivity {
         btn_help = findViewById(R.id.btn_help);
         btn_login = findViewById(R.id.btn_login);
         btn_reg = findViewById(R.id.btn_reg);
+
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
         btn_help.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,8 +69,6 @@ public class Login extends AppCompatActivity {
         } else {
 //            loginSuccess();
             loginRequest();
-            Intent intent3 = new Intent(Login.this, MoodQ.class);
-            startActivity(intent3);
         }
     }
 
@@ -92,8 +97,8 @@ public class Login extends AppCompatActivity {
         // Send Json to server
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("ID", id);
-            jsonObject.put("Password", pwd);
+            jsonObject.put(JSONTag_id,id);
+            jsonObject.put(JSONTag_Passwd,pwd);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -101,17 +106,38 @@ public class Login extends AppCompatActivity {
 
     }
 
-    private void loginResponse(JSONObject loginRes) {
+    public void loginResponse(JSONObject loginRes) {
             // get reply
+//        try {
+//            String loginResString = loginRes.getString(JSONTag_id);
+//            String loginResString1 = loginRes.getString(JSONTag_Passwd);
+//            Log.d("JSON id",loginResString);
+//            Log.d("JSON pwd",loginResString1);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
             try {
-                loginRes.get(id);
-                loginRes.get(pwd);
+                final Object o = loginRes.get(JSONTag_id);
+                final Object o1 = loginRes.get(JSONTag_Passwd);
+                Log.d("id",o.toString());
+                Log.d("pwd",o1.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+           // 질문 : get과 getString의 차이는 무엇인가요?
+           // 차이점 : getString은 변수의 value만 가져오고 get은 변수의 object 전체(value, hashcode, 기타 등등)을 가져온다.
             String login_data = loginRes.toString();
+            Log.d("login data",login_data);
             Toast.makeText(getApplication(), login_data, Toast.LENGTH_LONG).show();
+            Intent intent3 = new Intent(Login.this, MoodQ.class);
+            intent3.putExtra(intent_mood1, login_data);
+            startActivity(intent3);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
+    }
 }

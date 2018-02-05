@@ -18,10 +18,11 @@ import org.json.JSONObject;
 
 public class Register extends AppCompatActivity {
 
-    Button btn_submit;
+    Button btn_submit, btn_main;
     private EditText et_email, et_pwd2, et_name, et_phone;
     private String email, pwd, name, phone;
-
+    private BackPressCloseHandler backPressCloseHandler;
+    String regDataSend = "REGDATA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,18 @@ public class Register extends AppCompatActivity {
         et_pwd2 = (EditText) findViewById(R.id.et_pwd2);
         et_name = (EditText) findViewById(R.id.et_name);
         et_phone = (EditText) findViewById(R.id.et_phone);
+        backPressCloseHandler = new BackPressCloseHandler(this);
         btn_submit = (Button) findViewById(R.id.btn_submit);
+        btn_main = (Button) findViewById(R.id.btn_main);
+
+        btn_main.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mainIntent = new Intent(Register.this, Login.class);
+                startActivity(mainIntent);
+            }
+        });
+
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +60,7 @@ public class Register extends AppCompatActivity {
             Toast.makeText(this,"회원가입 실패", Toast.LENGTH_LONG).show();
         } else {
             onRegSuccess();
+
         }
     }
 
@@ -61,10 +74,11 @@ public class Register extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String data = obj.toString();
-        Toast.makeText(getApplicationContext(), data, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(Register.this, Login.class);
-        startActivity(intent);
+        String regData = obj.toString();
+        Toast.makeText(getApplicationContext(), regData, Toast.LENGTH_LONG).show();
+        Intent regIntent = new Intent(Register.this, Login.class);
+        // regIntent.putExtra(regDataSend, regData);
+        startActivity(regIntent);
     }
 
     public boolean validate(){
@@ -93,5 +107,11 @@ public class Register extends AppCompatActivity {
         pwd = et_pwd2.getText().toString().trim();
         name = et_name.getText().toString().trim();
         phone = et_phone.getText().toString().trim();
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
     }
 }
