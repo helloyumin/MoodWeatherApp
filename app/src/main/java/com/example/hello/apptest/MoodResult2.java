@@ -15,23 +15,26 @@ import org.json.JSONObject;
 
 public class MoodResult2 extends AppCompatActivity {
 
-    String moodQ_result2= "RESULT2";
+    String userscore, totalscore, username;
+    Intent getIntent;
+    TextView tv_result2, tv_music;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood_result2);
 
-        TextView tv_music = (TextView) findViewById(R.id.tv_music);
-        Intent getResult2 = getIntent();
-        JSONObject result2 = null;
-        try {
-            result2 = new JSONObject(getResult2.getStringExtra(moodQ_result2));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        final String mood_result2 = result2.toString();
-        Toast.makeText(getApplicationContext(), mood_result2, Toast.LENGTH_LONG).show();
+        tv_result2 = (TextView) findViewById(R.id.tv_result2);
+        tv_music = (TextView) findViewById(R.id.tv_music);
+
+        getIntent = getIntent();
+        userscore = getIntent.getStringExtra("score");
+        totalscore = getIntent.getStringExtra("moodScore");
+        username = getIntent.getStringExtra("name");
+
+        tv_result2.setText(username+"님의 어제 점수는 "+userscore+"점이고, "+"오늘의 점수는 " +totalscore+"점입니다.");
+
 
     }
 }

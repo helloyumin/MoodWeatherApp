@@ -36,7 +36,14 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
 
         if (type.equals("moodQ")) {
             try {
-                String totalScore = params[1];
+
+                String a1 = params[1];
+                String a2 = params[2];
+                String a3 = params[3];
+                String a4 = params[4];
+                String a5 = params[5];
+                String a6 = params[6];
+                String totalScore = params[7];
 
                 URL url = new URL(moodQ_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -47,10 +54,19 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                String post_score = URLEncoder.encode("Score", "UTF-8") + "=" + URLEncoder.encode(totalScore, "UTF-8");
-                Log.d("POST", post_score);
+                String post_answer = URLEncoder.encode("a1", "UTF-8") + "=" + URLEncoder.encode(a1, "UTF-8")
+                        + "&" + URLEncoder.encode("a2", "UTF-8") + "=" + URLEncoder.encode(a2, "UTF-8")
+                        + "&" + URLEncoder.encode("a3", "UTF-8") + "=" + URLEncoder.encode(a3, "UTF-8")
+                        + "&" + URLEncoder.encode("a4", "UTF-8") + "=" + URLEncoder.encode(a4, "UTF-8")
+                        + "&" + URLEncoder.encode("a5", "UTF-8") + "=" + URLEncoder.encode(a5, "UTF-8")
+                        + "&" + URLEncoder.encode("a6", "UTF-8") + "=" + URLEncoder.encode(a6, "UTF-8")
+                        + "&" + URLEncoder.encode("totalscore", "UTF-8") + "=" + URLEncoder.encode(totalScore, "UTF-8");
 
-                bufferedWriter.write(post_score);
+                Log.d("POST", post_answer);
+               //String post_score = URLEncoder.encode("Score", "UTF-8") + "=" + URLEncoder.encode(totalScore, "UTF-8");
+                // Log.d("POST", post_score);
+
+                bufferedWriter.write(post_answer);
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 outputStream.close();

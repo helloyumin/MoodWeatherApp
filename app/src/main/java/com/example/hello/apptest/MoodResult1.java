@@ -14,6 +14,8 @@ import org.json.JSONObject;
 
 public class MoodResult1 extends AppCompatActivity {
 
+    String userscore, totalscore, username;
+    Intent getResult;
     private BackPressCloseHandler backPressCloseHandler;        // 뒤로가기 2번 누르면 종료
 
     @Override
@@ -26,9 +28,12 @@ public class MoodResult1 extends AppCompatActivity {
         TextView tv_score = (TextView) findViewById(R.id.tv_score);
         TextView tv_word = (TextView) findViewById(R.id.tv_word);
         Button btn_next = (Button) findViewById(R.id.btn_next);
-        Intent getResult = getIntent();
-        String userscore = getResult.getStringExtra("score");
-        tv_score.setText(userscore+"점 입니다.");
+        getResult = getIntent();
+        userscore = getResult.getStringExtra("score");
+        totalscore = getResult.getStringExtra("moodScore");
+        username = getResult.getStringExtra("name");
+
+        tv_score.setText(username+"님의 점수는 " + totalscore +"점 입니다.");
 //
 //        JSONObject result = null;
 //        try {
@@ -43,7 +48,9 @@ public class MoodResult1 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MoodResult1.this, MoodResult2.class);
-//                intent.putExtra("RESULT2", mood_result);
+                intent.putExtra("score", userscore);
+                intent.putExtra("moodScore", totalscore);
+                intent.putExtra("name", username);
                 startActivity(intent);
             }
         });

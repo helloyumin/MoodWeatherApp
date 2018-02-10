@@ -64,15 +64,16 @@ public class loginMysql extends Thread {
                             if ( line == null )
                                 break;
 
+
                             String line2;
                             Log.d("buffer ","["+line+"]\n");
                             Log.d("length ",String.valueOf(line.length()));
                             int q=0;
                             for(int i=0;i<line.length();i++) {
                                 char c;
-                                c=line.charAt(i);
+                                c=line.charAt(i);         // BufferReader를 통해 읽어온 문자열을 하나씩 쪼개서 문자로 읽어드림
                                 int ch;
-                                ch=(int)c;
+                                ch=(int)c;      // 읽어온 문자를 다시 아스키 코드로 변환
                                 Log.d(" "+String.valueOf(i)+" ",String.valueOf(line.charAt(i))+":"+String.valueOf(ch));
 
 
@@ -105,7 +106,7 @@ public class loginMysql extends Thread {
             @Override
             public void run() {
                 try {
-                    //Value ﻿of type java.lang.String cannot be converted to JSONObject 오류가 뜸
+                    //Value of type java.lang.String cannot be converted to JSONObject 오류가 뜸
                     JSONObject jObject = new JSONObject(result);
                    // Log.d("json", String.valueOf(jObject));
                     String getpw =jObject.get("Password").toString();

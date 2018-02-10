@@ -50,16 +50,18 @@ public class MoodQ2 extends AppCompatActivity {
     private BackPressCloseHandler backPressCloseHandler;
     private JSONObject answerJson;
     private int success = 0;
+    String username, str_a1, str_a2, str_a3, str_a4, str_a5, str_a6, totalscore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood_q2);
 
+        btn_send = findViewById(R.id.btn_send);
         backPressCloseHandler = new BackPressCloseHandler(this);
 
         Intent getData = getIntent();
-        String username = getData.getStringExtra("name");
+        username = getData.getStringExtra("name");
         userscore = getData.getStringExtra("score");
         Log.d("Intent", username);
 
@@ -99,15 +101,12 @@ public class MoodQ2 extends AppCompatActivity {
         rb28 = findViewById(R.id.rb28);
         rb29 = findViewById(R.id.rb29);
         rb30 = findViewById(R.id.rb30);
-        btn_send = findViewById(R.id.btn_send);
         q_setup_listener();
+
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // Log.d("btn_send",loginRes.toString());
-               // if(loginRes != null){
                 int a=result_check();
-                //   }
             }
         });
     }
@@ -301,22 +300,41 @@ public class MoodQ2 extends AppCompatActivity {
             return 0;
         } else {
 
-            Log.d("id= ", String.valueOf(q1.getCheckedRadioButtonId()));
+
             RadioButton a1 = findViewById(q1.getCheckedRadioButtonId());
+            RadioButton a2 = findViewById(q2.getCheckedRadioButtonId());
+            RadioButton a3 = findViewById(q3.getCheckedRadioButtonId());
+            RadioButton a4 = findViewById(q4.getCheckedRadioButtonId());
+            RadioButton a5 = findViewById(q5.getCheckedRadioButtonId());
+            RadioButton a6 = findViewById(q6.getCheckedRadioButtonId());
+
+            str_a1 = a1.getText().toString();
+            str_a2 = a2.getText().toString();
+            str_a3 = a3.getText().toString();
+            str_a4 = a4.getText().toString();
+            str_a5 = a5.getText().toString();
+            str_a6 = a6.getText().toString();
+
+            Log.d("id= ", String.valueOf(q1.getCheckedRadioButtonId()));
             Log.d("a id= ", String.valueOf(a1));
             Log.d("a.text", a1.getText().toString());
             Log.d("score= ", String.valueOf(score1) + ", " + String.valueOf(score2) + ", ");
             Log.d("score= ", String.valueOf(score3) + ", " + String.valueOf(score4) + ", ");
             Log.d("score= ", String.valueOf(score5) + ", " + String.valueOf(score6) + ", ");
 
-            String toScore = String.valueOf(score1 + score2 + score3 + score4 + score5 + score6);
-            Log.d("totalScore:", toScore);
+            int toScore = score1 + score2 + score3 + score4 + score5 + score6;
+            totalscore = Integer.toString(toScore);
+            Log.d("totalScore:", totalscore);
+
             String type = "moodQ";
             BackgroundWorker2 backgroundWorker2 = new BackgroundWorker2(this);
-            backgroundWorker2.execute(type, toScore);
+            backgroundWorker2.execute(type, str_a1, str_a2, str_a3, str_a4, str_a5, str_a6, totalscore);
 
+            // 로그인해서 존재하고 있는 점수를 다음 화면으로 전달
             Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
             intent.putExtra("score", userscore);
+            intent.putExtra("moodScore", totalscore);
+            intent.putExtra("name", username);
             startActivity(intent);
 
             return 1;
@@ -324,9 +342,8 @@ public class MoodQ2 extends AppCompatActivity {
 
     }
 
-
     @Override
-    public void onBackPressed() {
+    public void onBackPressed() {       // 종료
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
