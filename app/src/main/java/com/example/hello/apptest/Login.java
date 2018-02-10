@@ -1,6 +1,9 @@
 package com.example.hello.apptest;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,125 +17,110 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Login extends AppCompatActivity {
+import java.util.HashMap;
 
-    EditText et_id, et_pwd;
+public class Login extends AppCompatActivity implements View.OnClickListener {
+
+    static EditText id, pwd;
+    static public boolean login_state = false;
     CheckBox auto_login;
     Button btn_help, btn_reg, btn_login;
-    String id, pwd;
-    String JSONTag_id="ID";
-    String JSONTag_Passwd="password";
-    String intent_mood1 = "LOGIN";
+
+    String JSONTag_id = "ID";
+    String JSONTag_Passwd = "password";
     private BackPressCloseHandler backPressCloseHandler;
+    static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        et_id = findViewById(R.id.et_id);
-        et_pwd = findViewById(R.id.et_pwd1);
+        mContext=this;
+
+        id = findViewById(R.id.et_id);
+        pwd = findViewById(R.id.et_pwd1);
         auto_login = findViewById(R.id.check_auto);
         btn_help = findViewById(R.id.btn_help);
         btn_login = findViewById(R.id.btn_login);
         btn_reg = findViewById(R.id.btn_reg);
 
+        btn_reg.setOnClickListener(this);
+        btn_login.setOnClickListener(this);
+        btn_help.setOnClickListener(this);
+
         backPressCloseHandler = new BackPressCloseHandler(this);
 
-        btn_help.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+//        btn_help.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent1 = new Intent(Login.this, Help.class);
+//                startActivity(intent1);
+//            }
+//        });
+
+//        btn_reg.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent2 = new Intent(Login.this, Register.class);
+//                startActivity(intent2);
+//            }
+//        });
+
+//        btn_login.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {login();}
+//        });
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_login:
+                if (id.getText().toString() != null && pwd.getText().toString() != null) {
+                    login_proc(login_state);
+                } else
+                    Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btn_help:
                 Intent intent1 = new Intent(Login.this, Help.class);
                 startActivity(intent1);
-            }
-        });
-
-        btn_reg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.btn_reg:
                 Intent intent2 = new Intent(Login.this, Register.class);
                 startActivity(intent2);
-            }
-        });
-
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {login();}
-        });
-
+                break;
+        }
     }
 
-    public void login(){
-        initialize();
-        if(!validate()){
-            Toast.makeText(this, "아이디와 비밀번호를 확인하세요", Toast.LENGTH_LONG).show();
+    void login_proc(boolean login) { //Login
+        if (!login) {
+            String str_id = id.getText().toString();
+            String str_pwd = pwd.getText().toString();
+            loginMysql idchk = new loginMysql(str_id, str_pwd, mContext);
+            loginMysql.active = true;
+            idchk.start();
         } else {
-//            loginSuccess();
-            loginRequest();
+
         }
     }
 
-    public void initialize(){
-        id = et_id.getText().toString().trim();
-        pwd = et_pwd.getText().toString().trim();
-    }
-
-    public boolean validate(){
-        boolean valid = true;
-        if(id.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(id).matches()){
-            et_id.setError("ID를 입력하세요");
-            valid = false;
-        }
-        else if (pwd.isEmpty()){
-            et_pwd.setError("비밀번호를 입력하세요");
-            valid = false;
-        }
-        else if(!id.equals("haku@gmail.com") || !pwd.equals("1234")){
-            valid = false;
-        }
-        return valid;
-    }
-
-    public void loginRequest(){
-        // Send Json to server
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put(JSONTag_id,id);
-            jsonObject.put(JSONTag_Passwd,pwd);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        loginResponse(jsonObject);
-
-    }
-
-    public void loginResponse(JSONObject loginRes) {
-            // get reply
-//        try {
-//            String loginResString = loginRes.getString(JSONTag_id);
-//            String loginResString1 = loginRes.getString(JSONTag_Passwd);
-//            Log.d("JSON id",loginResString);
-//            Log.d("JSON pwd",loginResString1);
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-            try {
-                final Object o = loginRes.get(JSONTag_id);
-                final Object o1 = loginRes.get(JSONTag_Passwd);
-                Log.d("id",o.toString());
-                Log.d("pwd",o1.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
+    static public void result_login(String result, String pwd, String name, String score) {
+        loginMysql.active = false;
+        if (result.equals("false")) {
+            Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
+        } else {
+            if (pwd.equals(result)) {
+                Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
+                Intent intent3 = new Intent(mContext, MoodQ.class);
+                intent3.putExtra("name", name);
+                intent3.putExtra("score", score);
+                mContext.startActivity(intent3);
+            } else {
+                Toast.makeText(mContext, "비밀번호가 틀렸습니다.", Toast.LENGTH_LONG).show();
             }
-           // 질문 : get과 getString의 차이는 무엇인가요?
-           // 차이점 : getString은 변수의 value만 가져오고 get은 변수의 object 전체(value, hashcode, 기타 등등)을 가져온다.
-            String login_data = loginRes.toString();
-            Log.d("login data",login_data);
-            Toast.makeText(getApplication(), login_data, Toast.LENGTH_LONG).show();
-            Intent intent3 = new Intent(Login.this, MoodQ.class);
-            intent3.putExtra(intent_mood1, login_data);
-            startActivity(intent3);
+        }
     }
 
     @Override
@@ -140,4 +128,48 @@ public class Login extends AppCompatActivity {
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
+
+//    public void loginRequest(){
+//        // Send Json to server
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//            jsonObject.put(JSONTag_id,id);
+//            jsonObject.put(JSONTag_Passwd,pwd);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        loginResponse(jsonObject);
+//
+//    }
+//
+//    public void loginResponse(JSONObject loginRes) {
+//            // get reply
+////        try {
+////            String loginResString = loginRes.getString(JSONTag_id);
+////            String loginResString1 = loginRes.getString(JSONTag_Passwd);
+////            Log.d("JSON id",loginResString);
+////            Log.d("JSON pwd",loginResString1);
+////
+////        } catch (JSONException e) {
+////            e.printStackTrace();
+////        }
+//            try {
+//                final Object o = loginRes.get(JSONTag_id);
+//                final Object o1 = loginRes.get(JSONTag_Passwd);
+//                Log.d("id",o.toString());
+//                Log.d("pwd",o1.toString());
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//           // 질문 : get과 getString의 차이는 무엇인가요?
+//           // 차이점 : getString은 변수의 value만 가져오고 get은 변수의 object 전체(value, hashcode, 기타 등등)을 가져온다.
+//            String login_data = loginRes.toString();
+//            Log.d("login data",login_data);
+//            Toast.makeText(getApplication(), login_data, Toast.LENGTH_LONG).show();
+//            Intent intent3 = new Intent(Login.this, MoodQ.class);
+//            intent3.putExtra("LOGIN", login_data);
+//            startActivity(intent3);
+//    }
+
+
 }

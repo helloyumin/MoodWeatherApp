@@ -114,6 +114,7 @@
         android:layout_gravity="center"
         android:layout_margin="50dp"
         android:background="@android:color/transparent"
-        android:text="확인" />
+        android:text="확인"
+        android:onClick="onReg"/>
 
 </LinearLayout>

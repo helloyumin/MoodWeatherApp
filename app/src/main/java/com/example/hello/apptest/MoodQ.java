@@ -3,6 +3,7 @@ package com.example.hello.apptest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,8 +13,9 @@ import org.json.JSONObject;
 
 public class MoodQ extends AppCompatActivity {
 
-    String intent_mood1 = "LOGIN";
-    String intent_mood2 = "LOGIN_MOOD";
+    String username;
+    String userscore;
+
     private BackPressCloseHandler backPressCloseHandler;
 
     @Override
@@ -23,22 +25,28 @@ public class MoodQ extends AppCompatActivity {
 
         TextView tv_wel = (TextView) findViewById(R.id.tv1);
         Button btn_next = (Button) findViewById(R.id.btn_next);
+        Button btn_help = (Button) findViewById(R.id.btn_help);
         backPressCloseHandler = new BackPressCloseHandler(this);
-        Intent getData = getIntent();
-        JSONObject login = null;
-        try {
-            login = new JSONObject(getData.getStringExtra(intent_mood1));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        final String loginData = login.toString();
-
+        Intent intent = getIntent();
+        username = intent.getStringExtra("name");
+        userscore = intent.getStringExtra("score");
+        Log.d("userscore", userscore);
+        tv_wel.setText(username + "님 환영합니다.");
+//        Intent getData = getIntent();
+//        JSONObject login = null;
+//        try {
+//            login = new JSONObject(getData.getStringExtra("LOGIN"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        final String loginData = login.toString();
 
         btn_next.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(MoodQ.this, MoodQ2.class);
-                    intent.putExtra(intent_mood2, loginData);
+                    intent.putExtra("name", username);
+                    intent.putExtra("score", userscore);
                     startActivity(intent);
                 }
             });

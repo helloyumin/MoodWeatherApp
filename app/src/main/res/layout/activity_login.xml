@@ -49,7 +49,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@android:color/transparent"
-        android:text="LOGIN" />
+        android:text="LOGIN"
+        />
 
     <Button
         android:id="@+id/btn_reg"

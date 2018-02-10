@@ -1,10 +1,12 @@
 package com.example.hello.apptest;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -16,23 +18,29 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+
 public class Register extends AppCompatActivity {
 
     Button btn_submit, btn_main;
-    private EditText et_email, et_pwd2, et_name, et_phone;
-    private String email, pwd, name, phone;
+    private EditText email, pwd, name, phone;
+    private String str_email, str_pwd, str_name, str_phone;
     private BackPressCloseHandler backPressCloseHandler;
-    String regDataSend = "REGDATA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        et_email = (EditText) findViewById(R.id.et_email);
-        et_pwd2 = (EditText) findViewById(R.id.et_pwd2);
-        et_name = (EditText) findViewById(R.id.et_name);
-        et_phone = (EditText) findViewById(R.id.et_phone);
+        email = (EditText) findViewById(R.id.et_email);
+        pwd = (EditText) findViewById(R.id.et_pwd2);
+        name = (EditText) findViewById(R.id.et_name);
+        phone = (EditText) findViewById(R.id.et_phone);
         backPressCloseHandler = new BackPressCloseHandler(this);
         btn_submit = (Button) findViewById(R.id.btn_submit);
         btn_main = (Button) findViewById(R.id.btn_main);
@@ -45,68 +53,73 @@ public class Register extends AppCompatActivity {
             }
         });
 
-
-        btn_submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                register();
-            }
-        });
     }
 
-    public void register(){
+//    public void register(){
+//        initialize();
+//        if(!validate()){
+//            Toast.makeText(this,"회원가입 실패", Toast.LENGTH_LONG).show();
+//        } else {
+//            //onRegSuccess();
+//            Intent regIntent = new Intent(Register.this, Login.class);
+//            startActivity(regIntent);
+//        }
+//    }
+
+    public void onReg(View view){
         initialize();
         if(!validate()){
             Toast.makeText(this,"회원가입 실패", Toast.LENGTH_LONG).show();
         } else {
-            onRegSuccess();
-
+            String type = "register";
+            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+            backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone);
+            Intent regIntent = new Intent(Register.this, Login.class);
+            startActivity(regIntent);
         }
     }
 
-    public void onRegSuccess(){
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("user_email", email);
-            obj.put("user_password", pwd);
-            obj.put("user_name", name);
-            obj.put("user_phone", phone);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String regData = obj.toString();
-        Toast.makeText(getApplicationContext(), regData, Toast.LENGTH_LONG).show();
-        Intent regIntent = new Intent(Register.this, Login.class);
-        // regIntent.putExtra(regDataSend, regData);
-        startActivity(regIntent);
-    }
+
+//        JSONObject obj = new JSONObject();
+//        try {
+//            obj.put("user_email", email);
+//            obj.put("user_password", pwd);
+//            obj.put("user_name", name);
+//            obj.put("user_phone", phone);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        String regData = obj.toString();
+//        Toast.makeText(getApplicationContext(), regData, Toast.LENGTH_LONG).show();
+
+
 
     public boolean validate(){
         boolean valid = true;
-        if(email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()){    // 이메일 입력하는 칸이 비었거나 이메일 형식에 안 맞을 때
-            et_email.setError("이메일 주소를 확인하세요");
+        if(str_email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(str_email).matches()){    // 이메일 입력하는 칸이 비었거나 이메일 형식에 안 맞을 때
+            email.setError("이메일 주소를 확인하세요");
             valid = false;
         }
-        if (pwd.isEmpty()){
-            et_pwd2.setError("비밀번호를 확인하세요.");
+        if (str_pwd.isEmpty()){
+            pwd.setError("비밀번호를 확인하세요.");
             valid = false;
         }
-        if(name.isEmpty()){
-            et_name.setError("이름을 확인하세요");
+        if(str_name.isEmpty()){
+            name.setError("이름을 확인하세요");
             valid = false;
         }
-        if(phone.isEmpty() || !Patterns.PHONE.matcher(phone).matches()){
-            et_phone.setError("전화번호를 확인하세요");
+        if(str_phone.isEmpty() || !Patterns.PHONE.matcher(str_phone).matches()){
+            phone.setError("전화번호를 확인하세요");
             valid = false;
         }
         return valid;
     }
 
     public void initialize(){
-        email = et_email.getText().toString().trim();
-        pwd = et_pwd2.getText().toString().trim();
-        name = et_name.getText().toString().trim();
-        phone = et_phone.getText().toString().trim();
+        str_email = email.getText().toString().trim();
+        str_pwd = pwd.getText().toString().trim();
+        str_name = name.getText().toString().trim();
+        str_phone = phone.getText().toString().trim();
     }
 
     @Override

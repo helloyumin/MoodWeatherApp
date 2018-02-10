@@ -14,9 +14,7 @@ import org.json.JSONObject;
 
 public class MoodResult1 extends AppCompatActivity {
 
-    String moodQ_result = "SCORE";
-    String moodQ_result2= "RESULT2";
-    private BackPressCloseHandler backPressCloseHandler;
+    private BackPressCloseHandler backPressCloseHandler;        // 뒤로가기 2번 누르면 종료
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +27,23 @@ public class MoodResult1 extends AppCompatActivity {
         TextView tv_word = (TextView) findViewById(R.id.tv_word);
         Button btn_next = (Button) findViewById(R.id.btn_next);
         Intent getResult = getIntent();
-
-        JSONObject result = null;
-        try {
-            result = new JSONObject(getResult.getStringExtra(moodQ_result));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        final String mood_result = result.toString();
-        tv_score.setText(mood_result);
+        String userscore = getResult.getStringExtra("score");
+        tv_score.setText(userscore+"점 입니다.");
+//
+//        JSONObject result = null;
+//        try {
+//            result = new JSONObject(getResult.getStringExtra("SCORE"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        final String mood_result = result.toString();
+//        tv_score.setText(mood_result);
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MoodResult1.this, MoodResult2.class);
-                intent.putExtra(moodQ_result2, mood_result);
+//                intent.putExtra("RESULT2", mood_result);
                 startActivity(intent);
             }
         });

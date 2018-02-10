@@ -3,6 +3,7 @@ package com.example.hello.apptest;
 /* 종료를 담당하는 클래스 */
 
 import android.app.Activity;
+import android.os.Build;
 import android.widget.Toast;
 
 /**
@@ -27,8 +28,16 @@ public class BackPressCloseHandler {
             return;
         }
         if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
-            activity.finish();
-            toast.cancel();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                // 젤리빈 이후 버전 종료
+                activity.finishAffinity();
+                toast.cancel();
+            }
+            else {
+                // 젤리빈 이전 버전 종료 방법 찾아보기, 이대로 하면 "뒤로가기"를 눌렀을 때 전 화면으로 돌아감
+                activity.finish();
+                toast.cancel();
+            }
         }
     }
 
