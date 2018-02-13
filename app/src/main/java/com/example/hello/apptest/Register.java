@@ -12,8 +12,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +33,8 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
@@ -31,6 +42,7 @@ public class Register extends AppCompatActivity {
     private EditText email, pwd, name, phone;
     private String str_email, str_pwd, str_name, str_phone;
     private BackPressCloseHandler backPressCloseHandler;
+    private StringRequest request;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,45 +66,6 @@ public class Register extends AppCompatActivity {
         });
 
     }
-
-//    public void register(){
-//        initialize();
-//        if(!validate()){
-//            Toast.makeText(this,"회원가입 실패", Toast.LENGTH_LONG).show();
-//        } else {
-//            //onRegSuccess();
-//            Intent regIntent = new Intent(Register.this, Login.class);
-//            startActivity(regIntent);
-//        }
-//    }
-
-    public void onReg(View view){
-        initialize();
-        if(!validate()){
-            Toast.makeText(this,"회원가입 실패", Toast.LENGTH_LONG).show();
-        } else {
-            String type = "register";
-            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-            backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone);
-            Intent regIntent = new Intent(Register.this, Login.class);
-            startActivity(regIntent);
-        }
-    }
-
-
-//        JSONObject obj = new JSONObject();
-//        try {
-//            obj.put("user_email", email);
-//            obj.put("user_password", pwd);
-//            obj.put("user_name", name);
-//            obj.put("user_phone", phone);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        String regData = obj.toString();
-//        Toast.makeText(getApplicationContext(), regData, Toast.LENGTH_LONG).show();
-
-
 
     public boolean validate(){
         boolean valid = true;
@@ -127,4 +100,32 @@ public class Register extends AppCompatActivity {
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
+
+
+    public void onReg(View view){
+        initialize();
+        if(!validate()){
+            Toast.makeText(this,"회원가입 실패", Toast.LENGTH_LONG).show();
+        } else {
+            String type = "register";
+            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+            backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone);
+            Intent regIntent = new Intent(Register.this, Login.class);
+            startActivity(regIntent);
+        }
+    }
+
+
+//        JSONObject obj = new JSONObject();
+//        try {
+//            obj.put("user_email", email);
+//            obj.put("user_password", pwd);
+//            obj.put("user_name", name);
+//            obj.put("user_phone", phone);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        String regData = obj.toString();
+//        Toast.makeText(getApplicationContext(), regData, Toast.LENGTH_LONG).show();
+
 }

@@ -58,6 +58,7 @@ public class loginMysql extends Thread {
                     Log.d("getresponse code=",String.valueOf(conn.getResponseCode()));
                     if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
                         connect_ok=true;
+                        // BufferReader: 문자/바이트 버퍼 입력, 라인 해석
                         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                         while ( true ) {
                             String line = br.readLine();
@@ -71,7 +72,7 @@ public class loginMysql extends Thread {
                             int q=0;
                             for(int i=0;i<line.length();i++) {
                                 char c;
-                                c=line.charAt(i);         // BufferReader를 통해 읽어온 문자열을 하나씩 쪼개서 문자로 읽어드림
+                                c=line.charAt(i);         // BufferReader를 통해 읽어온 문자열(line)을 하나씩 쪼개서 문자로 읽어드림
                                 int ch;
                                 ch=(int)c;      // 읽어온 문자를 다시 아스키 코드로 변환
                                 Log.d(" "+String.valueOf(i)+" ",String.valueOf(line.charAt(i))+":"+String.valueOf(ch));
@@ -106,21 +107,22 @@ public class loginMysql extends Thread {
             @Override
             public void run() {
                 try {
-                    //Value of type java.lang.String cannot be converted to JSONObject 오류가 뜸
                     JSONObject jObject = new JSONObject(result);
-                   // Log.d("json", String.valueOf(jObject));
                     String getpw =jObject.get("Password").toString();
+                    String getid = jObject.get("Email").toString();
                     String getname=jObject.get("Name").toString();
                     String getscore=jObject.get("Score").toString();
+                    Log.d("getid", getid);
                     Log.d("getpw",getpw);
                     Log.d("getname",getname);
-                    Log.d("getscore",getscore);
-                    Login.result_login(getpw, userPw, getname, getscore);
+                    Log.d("getscore",getscore);     // 점수가 존재 했을 때
+                    Login.result_login(getpw, userPw, getid, getname, getscore);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Login.result_login("false", "false", "false", "false");
+                    Login.result_login("false",  "false", "false", "false", "false");
                 }
             }
         });
     }
+
 }

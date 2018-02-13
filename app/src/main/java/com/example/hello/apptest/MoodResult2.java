@@ -33,7 +33,7 @@ public class MoodResult2 extends AppCompatActivity {
         totalscore = getIntent.getStringExtra("moodScore");
         username = getIntent.getStringExtra("name");
 
-        tv_result2.setText(username+"님의 어제 점수는 "+userscore+"점이고, "+"오늘의 점수는 " +totalscore+"점입니다.");
+        tv_result2.setText(username+"님의 어제 점수는 "+ userscore +"점이고, "+"오늘의 점수는 " +totalscore+"점입니다.");
 
 
     }

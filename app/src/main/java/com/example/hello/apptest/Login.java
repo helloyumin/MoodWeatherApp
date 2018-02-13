@@ -106,17 +106,27 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    static public void result_login(String result, String pwd, String name, String score) {
+    static public void result_login(String result, String pwd, String email, String name, String score) {
         loginMysql.active = false;
         if (result.equals("false")) {
             Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
         } else {
             if (pwd.equals(result)) {
+//                if(score == null){
                 Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
                 Intent intent3 = new Intent(mContext, MoodQ.class);
                 intent3.putExtra("name", name);
+                intent3.putExtra("email", email);
                 intent3.putExtra("score", score);
                 mContext.startActivity(intent3);
+//                } else {
+//                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
+//                    Intent intent4 = new Intent(mContext, MoodResult1.class);
+//                    intent4.putExtra("name", name);
+//                    intent4.putExtra("email", email);
+//                    intent4.putExtra("score", score);
+//                    mContext.startActivity((intent4));
+//                }
             } else {
                 Toast.makeText(mContext, "비밀번호가 틀렸습니다.", Toast.LENGTH_LONG).show();
             }

@@ -15,6 +15,7 @@ public class MoodQ extends AppCompatActivity {
 
     String username;
     String userscore;
+    String userId;
 
     private BackPressCloseHandler backPressCloseHandler;
 
@@ -29,6 +30,8 @@ public class MoodQ extends AppCompatActivity {
         backPressCloseHandler = new BackPressCloseHandler(this);
         Intent intent = getIntent();
         username = intent.getStringExtra("name");
+        userId = intent.getStringExtra("email");
+        Log.d("userId", userId);
         userscore = intent.getStringExtra("score");
         Log.d("userscore", userscore);
         tv_wel.setText(username + "님 환영합니다.");
@@ -47,6 +50,7 @@ public class MoodQ extends AppCompatActivity {
                     Intent intent = new Intent(MoodQ.this, MoodQ2.class);
                     intent.putExtra("name", username);
                     intent.putExtra("score", userscore);
+                    intent.putExtra("email", userId);
                     startActivity(intent);
                 }
             });
