@@ -341,6 +341,7 @@ public class MoodQ2 extends AppCompatActivity {
 }
 
 
+
 //    private void insertToDatabase(){
 //        class InsertData extends AsyncTask<Integer, Void, String> {
 //

@@ -111,7 +111,8 @@ public class loginMysql extends Thread {
                     String getpw =jObject.get("Password").toString();
                     String getid = jObject.get("Email").toString();
                     String getname=jObject.get("Name").toString();
-                    String getscore=jObject.get("Score").toString();
+                    String getscore = jObject.get("Score").toString();
+                  //  String getdate = jObject.get("Date").toString();
                     Log.d("getid", getid);
                     Log.d("getpw",getpw);
                     Log.d("getname",getname);

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
@@ -25,6 +26,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     static public boolean login_state = false;
     CheckBox auto_login;
     Button btn_help, btn_reg, btn_login;
+    Calendar now = Calendar.getInstance();
+    static String str_today;
+
 
     String JSONTag_id = "ID";
     String JSONTag_Passwd = "password";
@@ -36,6 +40,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        int today = now.get(Calendar.DATE);
+        str_today = Integer.toString(today);
         mContext=this;
 
         id = findViewById(R.id.et_id);
@@ -112,13 +118,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
         } else {
             if (pwd.equals(result)) {
-//                if(score == null){
-                Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
-                Intent intent3 = new Intent(mContext, MoodQ.class);
-                intent3.putExtra("name", name);
-                intent3.putExtra("email", email);
-                intent3.putExtra("score", score);
-                mContext.startActivity(intent3);
+            //    if(date != str_today){
+                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
+                    Intent intent3 = new Intent(mContext, MoodQ.class);
+                    intent3.putExtra("name", name);
+                    intent3.putExtra("email", email);
+                    intent3.putExtra("score", score);
+                     mContext.startActivity(intent3);
 //                } else {
 //                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
 //                    Intent intent4 = new Intent(mContext, MoodResult1.class);
