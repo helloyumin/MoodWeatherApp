@@ -29,7 +29,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     Calendar now = Calendar.getInstance();
     static String str_today;
 
-
     String JSONTag_id = "ID";
     String JSONTag_Passwd = "password";
     private BackPressCloseHandler backPressCloseHandler;
@@ -40,8 +39,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        int today = now.get(Calendar.DATE);
+        int today = now.get(Calendar.DATE)-1;
+        Log.d("TODAY", String.valueOf(today));
         str_today = Integer.toString(today);
+        Log.d("str_today", str_today);
         mContext=this;
 
         id = findViewById(R.id.et_id);
@@ -56,27 +57,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         btn_help.setOnClickListener(this);
 
         backPressCloseHandler = new BackPressCloseHandler(this);
-
-//        btn_help.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent1 = new Intent(Login.this, Help.class);
-//                startActivity(intent1);
-//            }
-//        });
-
-//        btn_reg.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent2 = new Intent(Login.this, Register.class);
-//                startActivity(intent2);
-//            }
-//        });
-
-//        btn_login.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {login();}
-//        });
 
     }
 
@@ -118,7 +98,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
         } else {
             if (pwd.equals(result)) {
-            //    if(date != str_today){
+//                if(score == null){
                     Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
                     Intent intent3 = new Intent(mContext, MoodQ.class);
                     intent3.putExtra("name", name);

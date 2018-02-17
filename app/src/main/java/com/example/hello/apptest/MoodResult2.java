@@ -5,6 +5,7 @@ package com.example.hello.apptest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,10 +22,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -41,9 +46,11 @@ public class MoodResult2 extends AppCompatActivity {
     ListView lv_music;
     String mJsonString;
 
-    String userscore, totalscore, username;
+    String userscore, todayscore, username, userId;
     Intent getIntent;
     TextView tv_result2;
+
+    Handler mHandler;
 
 
     @Override
@@ -52,19 +59,20 @@ public class MoodResult2 extends AppCompatActivity {
         setContentView(R.layout.activity_mood_result2);
 
         tv_result2 = (TextView) findViewById(R.id.tv_result2);
-        tv_music = (TextView) findViewById(R.id.tv_music);
+        tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시
         lv_music = (ListView) findViewById(R.id.lv_music);
         mArraylist = new ArrayList<>();
 
-        GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_music.php");
-
         getIntent = getIntent();
         userscore = getIntent.getStringExtra("score");
-        totalscore = getIntent.getStringExtra("moodScore");
+        todayscore = getIntent.getStringExtra("moodScore");
+        userId = getIntent.getStringExtra("email");
         username = getIntent.getStringExtra("name");
 
-        tv_result2.setText(username + "님의 어제 점수는 " + userscore + "점이고, " + "오늘의 점수는 " + totalscore + "점입니다.");
+        GetScore task = new GetScore();
+        task.execute("http://172.30.1.104/select_music.php?id="+userId);
+
+        tv_result2.setText(username + "님의 어제 점수는 " +userscore+ "점이고, " + "오늘의 점수는 " + todayscore + "점입니다.");
 
     }
 
@@ -98,8 +106,8 @@ public class MoodResult2 extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-
             String serverURL = params[0];
+            Log.d("serverURL", serverURL);
 
             try {
                 URL url = new URL(serverURL);
@@ -111,6 +119,23 @@ public class MoodResult2 extends AppCompatActivity {
 
                 int responseCode = httpURLConnection.getResponseCode();
                 Log.d("responseCode:", String.valueOf(responseCode));
+
+               // String email = params[1];
+
+//                httpURLConnection.setRequestMethod("POST");
+//                httpURLConnection.setDoOutput(true);
+//                httpURLConnection.setDoInput(true);
+//
+//                OutputStream outputStream = httpURLConnection.getOutputStream();
+//                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+//
+//                String post_answer = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+//                Log.d("post_answer : ", post_answer);
+//
+//                bufferedWriter.write(post_answer);
+//                bufferedWriter.flush();
+//                bufferedWriter.close();
+//                outputStream.close();
 
                 InputStream inputStream;
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -130,6 +155,8 @@ public class MoodResult2 extends AppCompatActivity {
                 }
 
                 bufferedReader.close();
+     //           inputStream.close();
+     //           httpURLConnection.disconnect();
 
                 return sb.toString().trim();
             } catch (Exception e) {
@@ -150,12 +177,12 @@ public class MoodResult2 extends AppCompatActivity {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject item = jsonArray.getJSONObject(i);
 
-                String num = item.getString(TAG_NUM);
+              //  String num = item.getString(TAG_NUM);
                 String music = item.getString(TAG_MUSIC);
 
                 HashMap<String, String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_NUM, num);
+             //   hashMap.put(TAG_NUM, num);
                 hashMap.put(TAG_MUSIC, music);
 
                 mArraylist.add(hashMap);
@@ -163,13 +190,13 @@ public class MoodResult2 extends AppCompatActivity {
             }
 
             ListAdapter adapter = new SimpleAdapter(MoodResult2.this, mArraylist, R.layout.music_list,
-                    new String[]{TAG_NUM, TAG_MUSIC},
-                    new int[]{R.id.m1, R.id.m2});
+                    new String[]{TAG_MUSIC},
+                    new int[]{R.id.m2});
 
             lv_music.setAdapter(adapter);
 
         } catch (JSONException e) {
-            Log.d(TAG, "showrResult : ", e);
+            Log.d(TAG, "showResult : ", e);
         }
     }
 }

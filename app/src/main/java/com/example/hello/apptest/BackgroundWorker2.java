@@ -32,7 +32,7 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        String moodQ_url = "http://192.168.0.23/insert_score.php";
+        String moodQ_url = "http://172.30.1.104/insert_score.php";
 
         if (type.equals("moodQ")) {
             try {
@@ -45,6 +45,7 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
 //                String a6 = params[6];
                 String email = params[1];
                 String score = params[2];
+                String weather = params[3];
 
                 URL url = new URL(moodQ_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -63,7 +64,8 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
                 String post_answer = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8")
-                       + "&" + URLEncoder.encode("score", "UTF-8") + "=" + URLEncoder.encode(score, "UTF-8");
+                        + "&" + URLEncoder.encode("score", "UTF-8") + "=" + URLEncoder.encode(score, "UTF-8")
+                       + "&" + URLEncoder.encode("weather", "UTF-8") + "=" + URLEncoder.encode(weather, "UTF-8");
 //                        + "&" + URLEncoder.encode("a3", "UTF-8") + "=" + URLEncoder.encode(a3, "UTF-8")
 //                        + "&" + URLEncoder.encode("a4", "UTF-8") + "=" + URLEncoder.encode(a4, "UTF-8")
 //                        + "&" + URLEncoder.encode("a5", "UTF-8") + "=" + URLEncoder.encode(a5, "UTF-8")

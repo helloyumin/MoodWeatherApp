@@ -51,6 +51,8 @@ public class MoodQ2 extends AppCompatActivity {
     private JSONObject answerJson;
     private int success = 0;
     String username, userId, todayscore;
+    int weatherCode = 0;
+    String weather;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -315,9 +317,21 @@ public class MoodQ2 extends AppCompatActivity {
             todayscore = Integer.toString(toScore);
             Log.d("totalScore:", todayscore);
 
+            if (toScore >= 22.5 ){
+                weatherCode = 1;
+            } else if(toScore >= 15){
+                weatherCode =2;
+            } else if(weatherCode >= 7.5){
+                weatherCode = 3;
+            } else {
+                weatherCode = 4;
+            }
+
+             weather = Integer.toString(weatherCode);
+
             String type = "moodQ";
             BackgroundWorker2 backgroundWorker2 = new BackgroundWorker2(this);
-            backgroundWorker2.execute(type, userId, todayscore);
+            backgroundWorker2.execute(type, userId, todayscore, weather);
             Log.d("userId", userId);
 
             // 로그인해서 존재하고 있는 점수를 다음 화면으로 전달
