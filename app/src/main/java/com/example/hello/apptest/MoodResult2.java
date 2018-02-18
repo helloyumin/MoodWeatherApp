@@ -1,6 +1,7 @@
 package com.example.hello.apptest;
 
 // 결과화면2에서는 종료 기능을 추가하지 않고 뒤로가기 했을 때 전화면으로 돌아가게 함
+// 어제 점수와 음악 추천 정보 가져옴
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -38,7 +39,7 @@ public class MoodResult2 extends AppCompatActivity {
     private static String TAG = "app_test.MoodResult2";
 
     private static final String TAG_JSON = "hello";
-    private static final String TAG_NUM = "Num";
+    private static final String TAG_YSTD = "Score";
     private static final String TAG_MUSIC = "Music";
 
     private TextView tv_music;
@@ -47,6 +48,7 @@ public class MoodResult2 extends AppCompatActivity {
     String mJsonString;
 
     String userscore, todayscore, username, userId;
+    int flag;
     Intent getIntent;
     TextView tv_result2;
 
@@ -59,20 +61,18 @@ public class MoodResult2 extends AppCompatActivity {
         setContentView(R.layout.activity_mood_result2);
 
         tv_result2 = (TextView) findViewById(R.id.tv_result2);
-        tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시
+        tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시 뷰
         lv_music = (ListView) findViewById(R.id.lv_music);
         mArraylist = new ArrayList<>();
 
         getIntent = getIntent();
-        userscore = getIntent.getStringExtra("score");
-        todayscore = getIntent.getStringExtra("moodScore");
+        // userscore = getIntent.getStringExtra("ystdScore");
+        todayscore = getIntent.getStringExtra("todayScore");
         userId = getIntent.getStringExtra("email");
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://172.30.1.104/select_music.php?id="+userId);
-
-        tv_result2.setText(username + "님의 어제 점수는 " +userscore+ "점이고, " + "오늘의 점수는 " + todayscore + "점입니다.");
+        task.execute("http://192.168.0.23/select_music.php?id=" + userId);
 
     }
 
@@ -120,23 +120,6 @@ public class MoodResult2 extends AppCompatActivity {
                 int responseCode = httpURLConnection.getResponseCode();
                 Log.d("responseCode:", String.valueOf(responseCode));
 
-               // String email = params[1];
-
-//                httpURLConnection.setRequestMethod("POST");
-//                httpURLConnection.setDoOutput(true);
-//                httpURLConnection.setDoInput(true);
-//
-//                OutputStream outputStream = httpURLConnection.getOutputStream();
-//                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-//
-//                String post_answer = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
-//                Log.d("post_answer : ", post_answer);
-//
-//                bufferedWriter.write(post_answer);
-//                bufferedWriter.flush();
-//                bufferedWriter.close();
-//                outputStream.close();
-
                 InputStream inputStream;
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     inputStream = httpURLConnection.getInputStream();
@@ -155,8 +138,6 @@ public class MoodResult2 extends AppCompatActivity {
                 }
 
                 bufferedReader.close();
-     //           inputStream.close();
-     //           httpURLConnection.disconnect();
 
                 return sb.toString().trim();
             } catch (Exception e) {
@@ -171,19 +152,29 @@ public class MoodResult2 extends AppCompatActivity {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject(mJsonString);
-
+            Log.d("mjson:", mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject item = jsonArray.getJSONObject(i);
 
-              //  String num = item.getString(TAG_NUM);
-                String music = item.getString(TAG_MUSIC);
+                String score = item.getString(TAG_YSTD);        // 어제 점수 가져오기
+                String music = item.getString(TAG_MUSIC);       // 음악 가져오기
 
                 HashMap<String, String> hashMap = new HashMap<>();
 
-             //   hashMap.put(TAG_NUM, num);
+                hashMap.put(TAG_YSTD, score);
                 hashMap.put(TAG_MUSIC, music);
+
+                userscore = hashMap.get(TAG_YSTD);
+                flag = Integer.parseInt(userscore);         // 어제 점수가 없을 경우(no_score = -1) 다르게 문자열을 출력하기 위해서
+
+                if (flag == -1){
+                    // 어제의 점수가 없을 경우에는
+                    tv_result2.setText(username + "님의 오늘의 점수는 " + todayscore + "점입니다.");
+                } else {
+                    tv_result2.setText(username + "님의 어제 점수는 " + userscore + "점이고, " + "오늘의 점수는 " + todayscore + "점입니다.");
+                }
 
                 mArraylist.add(hashMap);
 

@@ -14,13 +14,20 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.HashMap;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
+
 
     static EditText id, pwd;
     static public boolean login_state = false;
@@ -80,6 +87,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+
     void login_proc(boolean login) { //Login
         if (!login) {
             String str_id = id.getText().toString();
@@ -92,27 +100,25 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    static public void result_login(String result, String pwd, String email, String name, String score) {
+    static public void result_login(String result, String pwd, String email, String name, int flag) {
         loginMysql.active = false;
         if (result.equals("false")) {
             Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
         } else {
             if (pwd.equals(result)) {
-//                if(score == null){
+                if( flag == 0 ){
                     Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
                     Intent intent3 = new Intent(mContext, MoodQ.class);
                     intent3.putExtra("name", name);
                     intent3.putExtra("email", email);
-                    intent3.putExtra("score", score);
                      mContext.startActivity(intent3);
-//                } else {
-//                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
-//                    Intent intent4 = new Intent(mContext, MoodResult1.class);
-//                    intent4.putExtra("name", name);
-//                    intent4.putExtra("email", email);
-//                    intent4.putExtra("score", score);
-//                    mContext.startActivity((intent4));
-//                }
+                } else if(flag == 1) {
+                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
+                    Intent intent4 = new Intent(mContext, MoodResult1.class);
+                    intent4.putExtra("name", name);
+                    intent4.putExtra("email", email);
+                    mContext.startActivity((intent4));
+                }
             } else {
                 Toast.makeText(mContext, "비밀번호가 틀렸습니다.", Toast.LENGTH_LONG).show();
             }
@@ -124,6 +130,28 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //    public void loginRequest(){
 //        // Send Json to server

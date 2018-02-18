@@ -46,7 +46,7 @@ public class MoodQ2 extends AppCompatActivity {
     boolean isRCheck4 = false;
     boolean isRCheck5 = false;
     boolean isRCheck6 = false;
-    String userscore;
+   // String userscore;
     private BackPressCloseHandler backPressCloseHandler;
     private JSONObject answerJson;
     private int success = 0;
@@ -65,7 +65,7 @@ public class MoodQ2 extends AppCompatActivity {
         Intent getData = getIntent();
         username = getData.getStringExtra("name");
         userId = getData.getStringExtra("email");
-        userscore = getData.getStringExtra("score");
+      //  userscore = getData.getStringExtra("score");
         Log.d("Intent", username);
 
         q1 = findViewById(R.id.rg1);
@@ -317,6 +317,7 @@ public class MoodQ2 extends AppCompatActivity {
             todayscore = Integer.toString(toScore);
             Log.d("totalScore:", todayscore);
 
+            // 음악을 추천해주기 위해서 코드로 따로 분류
             if (toScore >= 22.5 ){
                 weatherCode = 1;
             } else if(toScore >= 15){
@@ -334,10 +335,7 @@ public class MoodQ2 extends AppCompatActivity {
             backgroundWorker2.execute(type, userId, todayscore, weather);
             Log.d("userId", userId);
 
-            // 로그인해서 존재하고 있는 점수를 다음 화면으로 전달
             Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
-            intent.putExtra("score", userscore);
-            intent.putExtra("moodScore", todayscore);
             intent.putExtra("email", userId);
             intent.putExtra("name", username);
             startActivity(intent);

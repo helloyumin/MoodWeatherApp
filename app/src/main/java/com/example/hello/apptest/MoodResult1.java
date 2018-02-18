@@ -1,5 +1,7 @@
 package com.example.hello.apptest;
 
+/*오늘 점수와 추천글을 DB에서 가져옴*/
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -38,8 +40,7 @@ public class MoodResult1 extends AppCompatActivity {
     private static String TAG = "app_test.MoodResult1";
 
     private static final String TAG_JSON = "hello";
-  //  private static final String TAG_EMAIL = "Email2";
-  //  private static final String TAG_SCORE = "Score";
+    private static final String TAG_SCORE = "Score";
     private static final String TAG_WORD = "Word";
 
     String mJsonString;
@@ -54,9 +55,6 @@ public class MoodResult1 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood_result1);
 
-        GetScore task = new GetScore();
-        task.execute("http://172.30.1.104/select_word.php");
-
         backPressCloseHandler = new BackPressCloseHandler(this);
         ImageView iv_weather = (ImageView) findViewById(R.id.iv_weather);
         tv_score = (TextView) findViewById(R.id.tv_score);
@@ -64,19 +62,17 @@ public class MoodResult1 extends AppCompatActivity {
         Button btn_next = (Button) findViewById(R.id.btn_next);
 
         getResult = getIntent();
-        userscore = getResult.getStringExtra("score");
-        todayscore = getResult.getStringExtra("moodScore");
         userId = getResult.getStringExtra("email");
         username = getResult.getStringExtra("name");
 
-        tv_score.setText(username+"님의 점수는 " + todayscore +"점 입니다.");
+        GetScore task = new GetScore();
+        task.execute("http://192.168.0.23/select_word.php?id="+userId);
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MoodResult1.this, MoodResult2.class);
-                intent.putExtra("score", userscore);
-                intent.putExtra("moodScore", todayscore);
+                intent.putExtra("todayScore", todayscore);
                 intent.putExtra("name", username);
                 intent.putExtra("email", userId);
                 startActivity(intent);
@@ -113,6 +109,7 @@ public class MoodResult1 extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             String serverURL = params[0];
+            Log.d("moodresult1 url: ", serverURL);
 
             try {
                 URL url = new URL(serverURL);
@@ -163,20 +160,21 @@ public class MoodResult1 extends AppCompatActivity {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject item = jsonArray.getJSONObject(i);
 
-               // String js_email = item.getString(TAG_EMAIL);
-              //  String js_score = item.getString(TAG_SCORE);
-                String js_word = item.getString(TAG_WORD);
+                String js_score = item.getString(TAG_SCORE);        // 오늘 점수
+                String js_word = item.getString(TAG_WORD);          // 추천 글
 
                 HashMap<String, String> hashMap = new HashMap<>();
 
-             //   hashMap.put(TAG_EMAIL, js_email);
-             //   hashMap.put(TAG_SCORE, js_score);
+                hashMap.put(TAG_SCORE, js_score);
                 hashMap.put(TAG_WORD, js_word);
 
+                todayscore = hashMap.get(TAG_SCORE);
+                Log.d("todayScore: ", todayscore);
                 word = hashMap.get(TAG_WORD);
+                Log.d("word:", word);
 
+                tv_score.setText(username+"님의 점수는 " + todayscore +"점 입니다.");
                 tv_word.setText(word);
-
             }
 
         } catch (JSONException e) {

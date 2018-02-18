@@ -16,25 +16,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
@@ -69,7 +52,9 @@ public class Register extends AppCompatActivity {
 
     public boolean validate(){
         boolean valid = true;
-        if(str_email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(str_email).matches()){    // 이메일 입력하는 칸이 비었거나 이메일 형식에 안 맞을 때
+        // 입력을 다 안 했을 경우
+        if(str_email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(str_email).matches()){
+            // 이메일 입력하는 칸이 비었거나 이메일 형식에 안 맞을 때
             email.setError("이메일 주소를 확인하세요");
             valid = false;
         }

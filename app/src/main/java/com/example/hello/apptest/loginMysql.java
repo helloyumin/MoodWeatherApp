@@ -23,7 +23,7 @@ public class loginMysql extends Thread {
     Handler mHandler;
     String userId=null,userPw=null,url=null;
   //  String login_url="http://192.168.43.130/select_login.php";
-    String login_url="http://172.30.1.104/select_login.php?id=";      //your server IP
+    String login_url="http://192.168.0.23/select_login.php?id=";      //your server IP
      // String login_url="http://192.168.43.130/test_login.php";
 
     public loginMysql(String id,String pw,Context passed_mContext){
@@ -111,17 +111,17 @@ public class loginMysql extends Thread {
                     String getpw =jObject.get("Password").toString();
                     String getid = jObject.get("Email").toString();
                     String getname=jObject.get("Name").toString();
-                    String getscore = jObject.get("Score").toString();
-                   // String getdate = jObject.get("Date").toString();
-                  //  Log.d("getdate", getdate);
+                    Integer getflag = Integer.valueOf(jObject.get("flag").toString());
+
                     Log.d("getid", getid);
                     Log.d("getpw",getpw);
                     Log.d("getname",getname);
-                 //   Log.d("getscore",getscore);     // 점수가 존재 했을 때
-                    Login.result_login(getpw, userPw, getid, getname, getscore);
+                    Log.d("getflag", String.valueOf(getflag));
+
+                    Login.result_login(getpw, userPw, getid, getname, getflag);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Login.result_login("false",  "false", "false", "false", "false");
+                    Login.result_login("false",  "false", "false", "false", Integer.parseInt("false"));
                 }
             }
         });
