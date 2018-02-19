@@ -72,7 +72,7 @@ public class MoodResult2 extends AppCompatActivity {
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_music.php?id=" + userId);
+        task.execute("http://192.168.1.103/select_music.php?id=" + userId);
 
     }
 

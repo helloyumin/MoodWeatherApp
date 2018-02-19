@@ -45,6 +45,8 @@ public class MoodResult1 extends AppCompatActivity {
 
     String mJsonString;
 
+    Boolean connect_ok;
+
     TextView tv_word, tv_score;
     String userscore, word, username, userId, todayscore;
     Intent getResult;
@@ -55,6 +57,7 @@ public class MoodResult1 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood_result1);
 
+        connect_ok = false;
         backPressCloseHandler = new BackPressCloseHandler(this);
         ImageView iv_weather = (ImageView) findViewById(R.id.iv_weather);
         tv_score = (TextView) findViewById(R.id.tv_score);
@@ -66,7 +69,7 @@ public class MoodResult1 extends AppCompatActivity {
         username = getResult.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_word.php?id="+userId);
+        task.execute("http://192.168.1.103/select_word.php?id="+userId);
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +81,6 @@ public class MoodResult1 extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
     private class GetScore extends AsyncTask<String, Void, String> {
@@ -124,6 +126,7 @@ public class MoodResult1 extends AppCompatActivity {
 
                 InputStream inputStream;
                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                    connect_ok = true;
                     inputStream = httpURLConnection.getInputStream();
                 } else {
                     inputStream = httpURLConnection.getErrorStream();
@@ -152,33 +155,37 @@ public class MoodResult1 extends AppCompatActivity {
 
     private void showResult() {
         JSONObject jsonObject = null;
-        try {
-            jsonObject = new JSONObject(mJsonString);
+        if(connect_ok == true) {
+            try {
+                jsonObject = new JSONObject(mJsonString);
 
-            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+                JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject item = jsonArray.getJSONObject(i);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject item = jsonArray.getJSONObject(i);
 
-                String js_score = item.getString(TAG_SCORE);        // 오늘 점수
-                String js_word = item.getString(TAG_WORD);          // 추천 글
+                    String js_score = item.getString(TAG_SCORE);        // 오늘 점수
+                    String js_word = item.getString(TAG_WORD);          // 추천 글
 
-                HashMap<String, String> hashMap = new HashMap<>();
+                    HashMap<String, String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_SCORE, js_score);
-                hashMap.put(TAG_WORD, js_word);
+                    hashMap.put(TAG_SCORE, js_score);
+                    hashMap.put(TAG_WORD, js_word);
 
-                todayscore = hashMap.get(TAG_SCORE);
-                Log.d("todayScore: ", todayscore);
-                word = hashMap.get(TAG_WORD);
-                Log.d("word:", word);
+                    todayscore = hashMap.get(TAG_SCORE);
+                    Log.d("todayScore: ", todayscore);
+                    word = hashMap.get(TAG_WORD);
+                    Log.d("word:", word);
 
-                tv_score.setText(username+"님의 점수는 " + todayscore +"점 입니다.");
-                tv_word.setText(word);
+                    tv_score.setText(username + "님의 점수는 " + todayscore + "점 입니다.");
+                    tv_word.setText(word);
+                }
+
+            } catch (JSONException e) {
+                Log.d(TAG, "showResult : ", e);
             }
+        } else {
 
-        } catch (JSONException e) {
-            Log.d(TAG, "showResult : ", e);
         }
     }
 

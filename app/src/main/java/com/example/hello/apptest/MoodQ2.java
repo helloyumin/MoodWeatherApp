@@ -354,67 +354,6 @@ public class MoodQ2 extends AppCompatActivity {
 
 
 
-//    private void insertToDatabase(){
-//        class InsertData extends AsyncTask<Integer, Void, String> {
-//
-//            @Override
-//            protected void onPreExecute() {
-//                super.onPreExecute();
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String aVoid) {
-//                super.onPostExecute(aVoid);
-//            }
-//
-//            @Override
-//            protected String doInBackground(Integer... integers) {
-//                try {
-//                    String path = "http://192.168.0.23/apptest/connection.php";
-//                    JSONObject moodQAnswer = new JSONObject();
-//                    try {
-//                        moodQAnswer.put("answer1", score1);
-//                        moodQAnswer.put("answer2", score2);
-//                        moodQAnswer.put("answer3", score3);
-//                        moodQAnswer.put("answer4", score4);
-//                        moodQAnswer.put("answer5", score5);
-//                        moodQAnswer.put("answer6", score6);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                    String answer = moodQAnswer.toString();
-//                    Log.d("answer json= ", answer);
-//
-//                    URL url = new URL(path);
-//                    URLConnection conn = url.openConnection();
-//
-//                    conn.setDoOutput(true);
-//                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-//
-//                    wr.write(answer);
-//                    wr.flush();
-//
-//                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//
-//                    StringBuilder sb = new StringBuilder();
-//                    String line = null;
-//
-//                    while ((line = reader.readLine()) != null) {
-//                        sb.append(line);
-//                        break;
-//                    }
-//                    return sb.toString();
-//                } catch (Exception e) {
-//                    return new String("Exception: " + e.getMessage());
-//                }
-//            }
-//        }
-//        InsertData task = new InsertData();
-//        Log.d("task", String.valueOf(task));
-//        task.execute(score1, score2, score3, score4, score5, score6);
-//    }
-
-
 
 
 

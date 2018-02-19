@@ -32,7 +32,7 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        String moodQ_url = "http://192.168.0.23/insert_score.php";
+        String moodQ_url = "http://192.168.1.103/insert_score.php";
 
         if (type.equals("moodQ")) {
             try {

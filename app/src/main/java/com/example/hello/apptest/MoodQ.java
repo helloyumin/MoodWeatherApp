@@ -14,7 +14,6 @@ import org.json.JSONObject;
 public class MoodQ extends AppCompatActivity {
 
     String username;
-  //  String userscore;
     String userId;
 
     private BackPressCloseHandler backPressCloseHandler;
@@ -32,8 +31,6 @@ public class MoodQ extends AppCompatActivity {
         username = intent.getStringExtra("name");
         userId = intent.getStringExtra("email");
         Log.d("userId", userId);
-     //   userscore = intent.getStringExtra("score");
-     //   Log.d("userscore", userscore);
         tv_wel.setText(username + "님 환영합니다.");
 
         btn_next.setOnClickListener(new View.OnClickListener() {

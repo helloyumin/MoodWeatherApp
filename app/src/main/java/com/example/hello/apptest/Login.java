@@ -28,16 +28,13 @@ import java.util.HashMap;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
-
     static EditText id, pwd;
     static public boolean login_state = false;
     CheckBox auto_login;
     Button btn_help, btn_reg, btn_login;
-    Calendar now = Calendar.getInstance();
-    static String str_today;
 
-    String JSONTag_id = "ID";
-    String JSONTag_Passwd = "password";
+//    String JSONTag_id = "ID";
+//    String JSONTag_Passwd = "password";
     private BackPressCloseHandler backPressCloseHandler;
     static Context mContext;
 
@@ -46,10 +43,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        int today = now.get(Calendar.DATE)-1;
-        Log.d("TODAY", String.valueOf(today));
-        str_today = Integer.toString(today);
-        Log.d("str_today", str_today);
         mContext=this;
 
         id = findViewById(R.id.et_id);
@@ -101,18 +94,20 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
     static public void result_login(String result, String pwd, String email, String name, int flag) {
+        // flag는 오늘 설문지를 했는지 안 했는지 확인하는 용(오늘 점수가 있는지 확인) / 0 = 안 했음, 1 = 했음 100-connection error
         loginMysql.active = false;
         if (result.equals("false")) {
+            // id가 없을 때
             Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
         } else {
             if (pwd.equals(result)) {
-                if( flag == 0 ){
+                if( flag == 0 ){ // 오늘 설문지를 안 했을 때
                     Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
                     Intent intent3 = new Intent(mContext, MoodQ.class);
                     intent3.putExtra("name", name);
                     intent3.putExtra("email", email);
                      mContext.startActivity(intent3);
-                } else if(flag == 1) {
+                } else if(flag == 1) { // 오늘 이미 설문지를 했을 때
                     Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
                     Intent intent4 = new Intent(mContext, MoodResult1.class);
                     intent4.putExtra("name", name);
