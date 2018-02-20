@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.ExecutionException;
 
 public class MoodQ2 extends AppCompatActivity {
 
@@ -53,6 +54,7 @@ public class MoodQ2 extends AppCompatActivity {
     String username, userId, todayscore;
     int weatherCode = 0;
     String weather;
+    String scoreResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -303,7 +305,6 @@ public class MoodQ2 extends AppCompatActivity {
             return 0;
         } else {
 
-
             RadioButton a1 = findViewById(q1.getCheckedRadioButtonId());
 
             Log.d("id= ", String.valueOf(q1.getCheckedRadioButtonId()));
@@ -332,13 +333,24 @@ public class MoodQ2 extends AppCompatActivity {
 
             String type = "moodQ";
             BackgroundWorker2 backgroundWorker2 = new BackgroundWorker2(this);
-            backgroundWorker2.execute(type, userId, todayscore, weather);
+            try {
+                scoreResult = backgroundWorker2.execute(type, userId, todayscore, weather).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
             Log.d("userId", userId);
 
-            Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
-            intent.putExtra("email", userId);
-            intent.putExtra("name", username);
-            startActivity(intent);
+            if (scoreResult != null) {
+                Log.d("scoreResult : ", scoreResult);
+                Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
+                intent.putExtra("email", userId);
+                intent.putExtra("name", username);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getApplication(), "에러 발생", Toast.LENGTH_LONG);
+            }
 
             return 1;
         }

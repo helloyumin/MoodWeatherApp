@@ -1,6 +1,7 @@
 package com.example.hello.apptest;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -39,8 +40,9 @@ public class Register extends AppCompatActivity {
     private String str_email, str_pwd, str_name, str_phone;
     private BackPressCloseHandler backPressCloseHandler;
     String testCheck;
-    String mJsonString;
     int idCode;
+    Boolean connect_ok = false;
+    String regResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,8 @@ public class Register extends AppCompatActivity {
     }
 
     private class CheckId extends AsyncTask<String, Void, String>{
+        String errorString;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -80,10 +84,11 @@ public class Register extends AppCompatActivity {
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
 
                 if (httpURLConnection != null){
-                    httpURLConnection.setConnectTimeout(10000);
+                    httpURLConnection.setConnectTimeout(1000);
                     httpURLConnection.setUseCaches(false);
 
                     if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
+                        connect_ok = true;
                         BufferedReader br = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
                         int i = 0;
                         for (;;){
@@ -101,12 +106,25 @@ public class Register extends AppCompatActivity {
                     }
                     httpURLConnection.disconnect();
                 } else {
+                    connect_ok = false;
                     System.out.println("FAILED");
                 }
             } catch (Exception e){
-                e.printStackTrace();
+                errorString = e.toString();
+                Log.d("Error:", errorString);
+                return null;
             }
             return checkId;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if(connect_ok == true){
+                Toast.makeText(getApplicationContext(), "서버 연결 성공", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -143,37 +161,43 @@ public class Register extends AppCompatActivity {
 
     public void onReg(View view) {
         initialize();
-
-        CheckId task = new CheckId();
-        try {
-            // 아이디 중복 체크
-            testCheck = task.execute("http://172.30.1.161/checkid.php?id="+str_email).get();
-            Log.d("CheckID: ", testCheck);
-            idCode = Integer.parseInt(testCheck);
-            Log.d("idCode", String.valueOf(idCode));
-           // Toast.makeText(getApplicationContext(), testCheck, Toast.LENGTH_LONG).show();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
         if (!validate()) {
             Toast.makeText(this, "회원가입 실패", Toast.LENGTH_LONG).show();
-        } else if(idCode == 1) {
-            Toast.makeText(this, "아이디 중복", Toast.LENGTH_LONG).show();
-        } else if (idCode == 0){
-            String type = "register";
-            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-            backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone);
-            Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_LONG).show();
-          Intent regIntent = new Intent(Register.this, Login.class);
-          startActivity(regIntent);
+        } else {
+            CheckId task = new CheckId();
+            if (connect_ok == true) {
+                try {
+                    // 아이디 중복 체크
+                    testCheck = task.execute("http://192.168.0.23/checkid.php?id=" + str_email).get();
+                    Log.d("CheckID: ", testCheck);
+                    idCode = Integer.parseInt(testCheck);
+                    Log.d("idCode", String.valueOf(idCode));
+                    // Toast.makeText(getApplicationContext(), testCheck, Toast.LENGTH_LONG).show();
+                    if (idCode == 1) {
+                        Toast.makeText(this, "아이디 중복", Toast.LENGTH_LONG).show();
+                    } else if (idCode == 0) {
+                        String type = "register";
+                        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+                        regResult = backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone).get();
+                        if (regResult != null) {
+                            Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_LONG).show();
+                            Intent regIntent = new Intent(Register.this, Login.class);
+                            startActivity(regIntent);
+                        } else {
+                            Toast.makeText(getApplication(), "에러 발생", Toast.LENGTH_LONG);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
+            }
         }
     }
-
-
-
+    
     @Override
     // 뒤로가기 종료
     public void onBackPressed() {

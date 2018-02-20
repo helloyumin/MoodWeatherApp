@@ -88,8 +88,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             loginMysql idchk = new loginMysql(str_id, str_pwd, mContext);
             loginMysql.active = true;
             idchk.start();
-        } else {
-
         }
     }
 
@@ -99,7 +97,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         if (result.equals("false")) {
             // id가 없을 때
             Toast.makeText(mContext, "사용자 ID가 없습니다", Toast.LENGTH_LONG).show();
-        } else {
+        } else if(result.equals("error")){
+            Toast.makeText(mContext, "서버 에러", Toast.LENGTH_LONG).show();
+        }
+        else {
             if (pwd.equals(result)) {
                 if( flag == 0 ){ // 오늘 설문지를 안 했을 때
                     Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();

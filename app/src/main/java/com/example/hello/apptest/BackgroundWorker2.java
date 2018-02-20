@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,6 +25,7 @@ import java.net.URLEncoder;
 public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
     Context context;
     AlertDialog alertDialog;
+    Boolean connect_ok;
 
     BackgroundWorker2(Context ctx) {
         context = ctx;
@@ -31,18 +33,13 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        String errorString;
         String type = params[0];
-        String moodQ_url = "http://192.168.1.103/insert_score.php";
+        connect_ok = false;
+        String moodQ_url = "http://192.168.0.23/insert_score.php";
 
         if (type.equals("moodQ")) {
             try {
-
-//                String a1 = params[1];
-//                String a2 = params[2];
-//                String a3 = params[3];
-//                String a4 = params[4];
-//                String a5 = params[5];
-//                String a6 = params[6];
                 String email = params[1];
                 String score = params[2];
                 String weather = params[3];
@@ -66,42 +63,50 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
                 String post_answer = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8")
                         + "&" + URLEncoder.encode("score", "UTF-8") + "=" + URLEncoder.encode(score, "UTF-8")
                        + "&" + URLEncoder.encode("weather", "UTF-8") + "=" + URLEncoder.encode(weather, "UTF-8");
-//                        + "&" + URLEncoder.encode("a3", "UTF-8") + "=" + URLEncoder.encode(a3, "UTF-8")
-//                        + "&" + URLEncoder.encode("a4", "UTF-8") + "=" + URLEncoder.encode(a4, "UTF-8")
-//                        + "&" + URLEncoder.encode("a5", "UTF-8") + "=" + URLEncoder.encode(a5, "UTF-8")
-//                        + "&" + URLEncoder.encode("a6", "UTF-8") + "=" + URLEncoder.encode(a6, "UTF-8")
-//                        + "&" + URLEncoder.encode("totalscore", "UTF-8") + "=" + URLEncoder.encode(totalScore, "UTF-8");
 
                 Log.d("POST", post_answer);
-               //String post_score = URLEncoder.encode("Score", "UTF-8") + "=" + URLEncoder.encode(totalScore, "UTF-8");
-                // Log.d("POST", post_score);
 
                 bufferedWriter.write(post_answer);
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 outputStream.close();
 
-                // 입력 스트림: 데이터를 먼저 스트림으로 읽어드리고 스트림에 존재하는 데이터를 하나씩 읽어 들임.
-                // BufferReader: 문자/바이트 버퍼 입력, 라인 해석
-                // InputStreamReader: 바이트 스트림을 문자 스트림으로 변환
-                InputStream inputStream = httpURLConnection.getInputStream();   // 문자/바이트 입력 스트림을 위한 추상 클래스
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
-                String result = "";
-                String line = "";
-                Log.d("result:", result);
-                Log.d("line:", line);
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
-                }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
+                if (httpURLConnection != null){
+                    httpURLConnection.setConnectTimeout(1000);
+            //        httpURLConnection.setUseCaches(false);
 
+                    if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
+                        connect_ok = true;
+                        // 입력 스트림: 데이터를 먼저 스트림으로 읽어드리고 스트림에 존재하는 데이터를 하나씩 읽어 들임.
+                        // BufferReader: 문자/바이트 버퍼 입력, 라인 해석
+                        // InputStreamReader: 바이트 스트림을 문자 스트림으로 변환
+                        InputStream inputStream = httpURLConnection.getInputStream();   // 문자/바이트 입력 스트림을 위한 추상 클래스
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                        String result = "";
+                        String line = "";
+                        Log.d("result:", result);
+                        Log.d("line:", line);
+                        while ((line = bufferedReader.readLine()) != null) {
+                            result += line;
+                        }
+                        bufferedReader.close();
+                        inputStream.close();
+
+                        return result;
+                    }
+                    httpURLConnection.disconnect();
+                } else {
+                    connect_ok = false;
+                    System.out.println("FAILED");
+                }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                errorString = e.toString();
+                Log.d("MalformedURL Error:", errorString);
+                return null;
             } catch (IOException e) {
-                e.printStackTrace();
+                errorString = e.toString();
+                Log.d("IOException Error:", errorString);
+                return null;
             }
         }
         return null;
@@ -109,14 +114,16 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPreExecute() {
-        alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("Login Status");
+       super.onPreExecute();
     }
 
     @Override
     protected void onPostExecute(String result) {
-        alertDialog.setMessage(result);
-        alertDialog.show();
+       if (connect_ok == true){
+           Toast.makeText(context, "서버 연결 성공", Toast.LENGTH_SHORT).show();
+       } else {
+           Toast.makeText(context, "서버 연결 실패", Toast.LENGTH_SHORT).show();
+       }
     }
 
     @Override

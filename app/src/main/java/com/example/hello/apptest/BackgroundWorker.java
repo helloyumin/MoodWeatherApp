@@ -45,6 +45,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
     Context context;
     AlertDialog alertDialog;
     Boolean connect_ok;
+    HttpURLConnection httpURLConnection;
 
     BackgroundWorker(Context ctx) {
         context = ctx;
@@ -57,7 +58,8 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
         // 비동기방식: 데이터를 주고 받을 때 미리 약속된 신호에 의해 통신하는 방식
 
         String type = params[0];
-        String register_url = "http://172.30.1.161/insert_test2.php";
+        String errorString;
+        String register_url = "http://192.168.0.23/insert_test2.php";
 
         if (type.equals("register")) {
             try {
@@ -67,7 +69,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                 String phone = params[4];
 
                 URL url = new URL(register_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
@@ -86,22 +88,40 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                 bufferedWriter.close();
                 outputStream.close();
 
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
-                String result = "";
-                String line = "";
+                if (httpURLConnection != null) {
+                    httpURLConnection.setConnectTimeout(1000);
 
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
+                    if (connect_ok == true) {
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                        String result = "";
+                        String line = "";
+
+                        while ((line = bufferedReader.readLine()) != null) {
+                            result += line;
+                        }
+                        bufferedReader.close();
+                        inputStream.close();
+
+                        return result;
+                    }
                 }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
+                else {
+                    connect_ok = false;
+                    System.out.println("FAILED");
+                }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                errorString = e.toString();
+                Log.d("MalformedURL Error:", errorString);
+                return null;
             } catch (IOException e) {
-                e.printStackTrace();
+                errorString = e.toString();
+                Log.d("IOException Error:", errorString);
+                return null;
+            } finally {
+                if(httpURLConnection != null){
+                    httpURLConnection.disconnect();
+                }
             }
         }
             return null;
@@ -112,8 +132,8 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
             // AsyncTask로 백그라운드 작업을 실행하기 전에 실행되는 부분
             // 스레드 작업 이전에 수행할 동작을 구현(초기와, 변수 초기화, 네트워크 통신 전 셋팅 할 값 작성)
             // 여기의 경우에는 스레드 작업하기 전 팝업창 구현
-            alertDialog = new AlertDialog.Builder(context).create();
-            alertDialog.setTitle("Register Status");
+         //   alertDialog = new AlertDialog.Builder(context).create();
+         //   alertDialog.setTitle("Register Status");
         }
 
         @Override
@@ -121,8 +141,13 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
             // doInBackground() 메소드에서 작업이 끝나면 결과 파라미터를 리턴,
             // 그 리턴 값을 통해 스레드 작업이 끝났을 때의 동작 구현
             // 여기서는 결과를 팝업창에 전달해서 출력
-            alertDialog.setMessage(result);
-            alertDialog.show();
+            if (connect_ok == true){
+                Toast.makeText(context, "서버 연결 성공", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "서버 연결 실패", Toast.LENGTH_SHORT).show();
+            }
+          //  alertDialog.setMessage(result);
+          //  alertDialog.show();
         }
 
         @Override

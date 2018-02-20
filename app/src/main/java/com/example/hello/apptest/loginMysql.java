@@ -2,6 +2,8 @@ package com.example.hello.apptest;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,12 +35,12 @@ public class loginMysql extends Thread {
     String userId=null,userPw=null,url=null;
     Boolean connect_ok;
   //  String login_url="http://192.168.43.130/select_login.php";
-    String login_url="http://192.168.1.103/select_login.php?id=";      //your server IP
+    String login_url="http://192.168.0.23/select_login.php?id=";      //your server IP
      // String login_url="http://192.168.43.130/test_login.php";
 
     public loginMysql(String id,String pw,Context passed_mContext){
         mHandler=new Handler();
-        userId=id;
+        userId = id;
         userPw=pw;
         url=login_url+userId;
         mContext=passed_mContext;
@@ -58,70 +60,77 @@ public class loginMysql extends Thread {
     @Override
     public void run() {
         super.run();
-        if(active){
+        if(active) {
             // 읽어올 데이터를 저장할 StringBuilder를 생성
             // StringBuilder : 문자열 값의 변동이 클 때 유용, String과 다르게 같은 문자열을 갖더라도 변수가 다르면 서로 다른 메모리에 저장
             StringBuilder jsonHtml = new StringBuilder();
             try {
                 URL phpUrl = new URL(url);      // php의 주소와 id가 저장된 URL을 만들어 줌
-                HttpURLConnection conn = (HttpURLConnection)phpUrl.openConnection();        // Http로 연결 시작
-                Log.d("URL= ",url);
-                if ( conn != null ) {
+                HttpURLConnection conn = (HttpURLConnection) phpUrl.openConnection();        // Http로 연결 시작
+                Log.d("URL= ", url);
+                if (conn != null) {
                     conn.setConnectTimeout(1000);
                     conn.setUseCaches(false);
 
-                    Log.d("getresponse code=",String.valueOf(conn.getResponseCode()));
-                    if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+                    if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        Log.d("getresponse code=", String.valueOf(conn.getResponseCode()));
                         // 연결이 성공했을 때
-                        connect_ok=true;
+                        connect_ok = true;
                         // BufferReader: 문자/바이트 버퍼 입력, 라인 해석
                         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                        while ( true ) {
+                        while (true) {
                             String line = br.readLine();
-                            if ( line == null )
+                            if (line == null)
                                 break;
 
 
                             String line2;
-                            Log.d("buffer ","["+line+"]\n");
-                            Log.d("length ",String.valueOf(line.length()));
-                            int q=0;
-                            for(int i=0;i<line.length();i++) {
+                            Log.d("buffer ", "[" + line + "]\n");
+                            Log.d("length ", String.valueOf(line.length()));
+                            int q = 0;
+                            for (int i = 0; i < line.length(); i++) {
                                 char c;
-                                c=line.charAt(i);         // BufferReader를 통해 읽어온 문자열(line)을 하나씩 쪼개서 문자로 읽어드림
+                                c = line.charAt(i);         // BufferReader를 통해 읽어온 문자열(line)을 하나씩 쪼개서 문자로 읽어드림
                                 int ch;
-                                ch=(int)c;      // 읽어온 문자를 다시 아스키 코드로 변환
-                                Log.d(" "+String.valueOf(i)+" ",String.valueOf(line.charAt(i))+":"+String.valueOf(ch));
+                                ch = (int) c;      // 읽어온 문자를 다시 아스키 코드로 변환
+                                Log.d(" " + String.valueOf(i) + " ", String.valueOf(line.charAt(i)) + ":" + String.valueOf(ch));
 
 
-                          if ( ch > 255 ) //skip // check hangul data
-                              q++;
+                                if (ch > 255) //skip // check hangul data
+                                    q++;
                             }
-                            line2=line.substring(q);
-                            jsonHtml.append(line2 );       // php를 통해 mysql에서 읽어온 데이터를 라인단위로 저장
-                            Log.d("json html",jsonHtml.toString());
+                            line2 = line.substring(q);
+                            jsonHtml.append(line2);       // php를 통해 mysql에서 읽어온 데이터를 라인단위로 저장
+                            Log.d("json html", jsonHtml.toString());
                         }
                         br.close();
                     }
                     conn.disconnect();      // 연결을 끊음
+                } else {
+                    System.out.println("FAILED");
                 }
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 // failure code
             }
-            if ( connect_ok == true)
-                show(jsonHtml.toString());      // 읽어온 데이터를 처리하기 위해 show라는 함수로 보냄
-            else Toast.makeText(mContext, url+" Connection faild", Toast.LENGTH_LONG).show();
-
+            if (connect_ok == true) {
+                show(jsonHtml.toString());
+            }     // 읽어온 데이터를 처리하기 위해 show라는 함수로 보냄
+            else
+            {  mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, url+" Connection fail", Toast.LENGTH_LONG).show();
+                }
+            });}
+             }
         }
-
-    }
 
     void show(final String result){     // 읽어 온 데이터를 처리하는 함수
         mHandler.post(new Runnable(){
             @Override
             public void run() {
-                if ( connect_ok==true) {
+                if ( connect_ok==true ) {
                     try {
                         JSONObject jObject = new JSONObject(result);
                         String getpw = jObject.get("Password").toString();
@@ -138,10 +147,11 @@ public class loginMysql extends Thread {
                         // 값을 비교해서 처리하기 위하여 Login 액티비티로 전달
                     } catch (JSONException e) {
                         e.printStackTrace();
+                     //   Toast.makeText(mContext, "에러 발생", Toast.LENGTH_LONG).show();
                         Login.result_login("false", "false", "false", "false", 100);
                     }
                 }else{
-                    Login.result_login("false", "false", "false", "false", 100);
+                    Login.result_login("error", "false", "false", "false", 100);
                 }
             }
         });

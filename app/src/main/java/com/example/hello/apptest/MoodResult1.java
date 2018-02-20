@@ -69,7 +69,7 @@ public class MoodResult1 extends AppCompatActivity {
         username = getResult.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.1.103/select_word.php?id="+userId);
+        task.execute("http://192.168.0.23/select_word.php?id="+userId);
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,15 +96,13 @@ public class MoodResult1 extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
             if(result == null){
-               Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_LONG).show();
+               Toast.makeText(getApplicationContext(), "서버 연결 오류", Toast.LENGTH_LONG).show();
             }
             else {
                 mJsonString = result;
                 showResult();
             }
-
         }
 
         @Override
@@ -185,7 +183,7 @@ public class MoodResult1 extends AppCompatActivity {
                 Log.d(TAG, "showResult : ", e);
             }
         } else {
-
+            Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -52,7 +52,7 @@ public class MoodResult2 extends AppCompatActivity {
     Intent getIntent;
     TextView tv_result2;
 
-    Handler mHandler;
+    Boolean connect_ok;
 
 
     @Override
@@ -72,7 +72,7 @@ public class MoodResult2 extends AppCompatActivity {
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.1.103/select_music.php?id=" + userId);
+        task.execute("http://192.168.0.23/select_music.php?id=" + userId);
 
     }
 
@@ -97,6 +97,7 @@ public class MoodResult2 extends AppCompatActivity {
 
             if(result == null){
                 tv_music.setText(errorString);
+                Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
             }
             else {
                 mJsonString = result;
@@ -106,6 +107,7 @@ public class MoodResult2 extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+            connect_ok = false;
             String serverURL = params[0];
             Log.d("serverURL", serverURL);
 
@@ -122,6 +124,7 @@ public class MoodResult2 extends AppCompatActivity {
 
                 InputStream inputStream;
                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                    connect_ok = true;
                     inputStream = httpURLConnection.getInputStream();
                 } else {
                     inputStream = httpURLConnection.getErrorStream();
@@ -150,44 +153,48 @@ public class MoodResult2 extends AppCompatActivity {
 
     private void showResult() {
         JSONObject jsonObject = null;
-        try {
-            jsonObject = new JSONObject(mJsonString);
-            Log.d("mjson:", mJsonString);
-            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+        if (connect_ok = true) {
+            try {
+                jsonObject = new JSONObject(mJsonString);
+                Log.d("mjson:", mJsonString);
+                JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject item = jsonArray.getJSONObject(i);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject item = jsonArray.getJSONObject(i);
 
-                String score = item.getString(TAG_YSTD);        // 어제 점수 가져오기
-                String music = item.getString(TAG_MUSIC);       // 음악 가져오기
+                    String score = item.getString(TAG_YSTD);        // 어제 점수 가져오기
+                    String music = item.getString(TAG_MUSIC);       // 음악 가져오기
 
-                HashMap<String, String> hashMap = new HashMap<>();
+                    HashMap<String, String> hashMap = new HashMap<>();
 
-                hashMap.put(TAG_YSTD, score);
-                hashMap.put(TAG_MUSIC, music);
+                    hashMap.put(TAG_YSTD, score);
+                    hashMap.put(TAG_MUSIC, music);
 
-                userscore = hashMap.get(TAG_YSTD);
-                flag = Integer.parseInt(userscore);         // 어제 점수가 없을 경우(no_score = -1) 다르게 문자열을 출력하기 위해서
+                    userscore = hashMap.get(TAG_YSTD);
+                    flag = Integer.parseInt(userscore);         // 어제 점수가 없을 경우(no_score = -1) 다르게 문자열을 출력하기 위해서
 
-                if (flag == -1){
-                    // 어제의 점수가 없을 경우에는
-                    tv_result2.setText(username + "님의 오늘의 점수는 " + todayscore + "점입니다.");
-                } else {
-                    tv_result2.setText(username + "님의 어제 점수는 " + userscore + "점이고, " + "오늘의 점수는 " + todayscore + "점입니다.");
+                    if (flag == -1) {
+                        // 어제의 점수가 없을 경우에는
+                        tv_result2.setText(username + "님의 오늘의 점수는 " + todayscore + "점입니다.");
+                    } else {
+                        tv_result2.setText(username + "님의 어제 점수는 " + userscore + "점이고, " + "오늘의 점수는 " + todayscore + "점입니다.");
+                    }
+
+                    mArraylist.add(hashMap);
+
                 }
 
-                mArraylist.add(hashMap);
+                ListAdapter adapter = new SimpleAdapter(MoodResult2.this, mArraylist, R.layout.music_list,
+                        new String[]{TAG_MUSIC},
+                        new int[]{R.id.m2});
 
+                lv_music.setAdapter(adapter);
+
+            } catch (JSONException e) {
+                Log.d(TAG, "showResult : ", e);
             }
-
-            ListAdapter adapter = new SimpleAdapter(MoodResult2.this, mArraylist, R.layout.music_list,
-                    new String[]{TAG_MUSIC},
-                    new int[]{R.id.m2});
-
-            lv_music.setAdapter(adapter);
-
-        } catch (JSONException e) {
-            Log.d(TAG, "showResult : ", e);
+        } else {
+            Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
         }
     }
 }
