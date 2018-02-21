@@ -168,7 +168,7 @@ public class Register extends AppCompatActivity {
             if (connect_ok == true) {
                 try {
                     // 아이디 중복 체크
-                    testCheck = task.execute("http://192.168.0.23/checkid.php?id=" + str_email).get();
+                    testCheck = task.execute("http://172.30.1.33/checkid.php?id=" + str_email).get();
                     Log.d("CheckID: ", testCheck);
                     idCode = Integer.parseInt(testCheck);
                     Log.d("idCode", String.valueOf(idCode));
@@ -193,7 +193,8 @@ public class Register extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
+                // 이메일 중복 체크를 하려고 할 때 데이터베이스와 연결이 안 되어있을 때
+                Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
             }
         }
     }

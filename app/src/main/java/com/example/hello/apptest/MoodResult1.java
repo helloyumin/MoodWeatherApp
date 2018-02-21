@@ -69,7 +69,7 @@ public class MoodResult1 extends AppCompatActivity {
         username = getResult.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_word.php?id="+userId);
+        task.execute("http://172.30.1.33/select_word.php?id="+userId);
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,10 +180,11 @@ public class MoodResult1 extends AppCompatActivity {
                 }
 
             } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "showResult : ", e);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
         }
     }
 

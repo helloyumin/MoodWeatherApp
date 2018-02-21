@@ -72,7 +72,7 @@ public class MoodResult2 extends AppCompatActivity {
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_music.php?id=" + userId);
+        task.execute("http://172.30.1.33/select_music.php?id=" + userId);
 
     }
 
@@ -99,7 +99,7 @@ public class MoodResult2 extends AppCompatActivity {
                 tv_music.setText(errorString);
                 Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
             }
-            else {
+            else{
                 mJsonString = result;
                 showResult();
             }
@@ -191,10 +191,12 @@ public class MoodResult2 extends AppCompatActivity {
                 lv_music.setAdapter(adapter);
 
             } catch (JSONException e) {
+                // 서버는 연결 되어있지만 데이터베이스와 연결이 끊겨 있을 때 json형태의 값이 안 넘어와서 나타나는 오류 예외처리
+                Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "showResult : ", e);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
         }
     }
 }

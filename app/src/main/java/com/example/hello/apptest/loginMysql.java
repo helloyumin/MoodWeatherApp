@@ -35,7 +35,7 @@ public class loginMysql extends Thread {
     String userId=null,userPw=null,url=null;
     Boolean connect_ok;
   //  String login_url="http://192.168.43.130/select_login.php";
-    String login_url="http://192.168.0.23/select_login.php?id=";      //your server IP
+    String login_url="http://172.30.1.33/select_login.php?id=";      //your server IP
      // String login_url="http://192.168.43.130/test_login.php";
 
     public loginMysql(String id,String pw,Context passed_mContext){
@@ -84,23 +84,26 @@ public class loginMysql extends Thread {
                                 break;
 
 
-                            String line2;
-                            Log.d("buffer ", "[" + line + "]\n");
-                            Log.d("length ", String.valueOf(line.length()));
-                            int q = 0;
-                            for (int i = 0; i < line.length(); i++) {
-                                char c;
-                                c = line.charAt(i);         // BufferReader를 통해 읽어온 문자열(line)을 하나씩 쪼개서 문자로 읽어드림
-                                int ch;
-                                ch = (int) c;      // 읽어온 문자를 다시 아스키 코드로 변환
-                                Log.d(" " + String.valueOf(i) + " ", String.valueOf(line.charAt(i)) + ":" + String.valueOf(ch));
+//                            String line2;
+//                            Log.d("buffer ", "[" + line + "]\n");
+//                            Log.d("length ", String.valueOf(line.length()));
+//                            int q = 0;
+//                            for (int i = 0; i < line.length(); i++) {
+//                                char c;
+//                                c = line.charAt(i);         // BufferReader를 통해 읽어온 문자열(line)을 하나씩 쪼개서 문자로 읽어드림
+//                                int ch;
+//                                ch = (int) c;      // 읽어온 문자를 다시 아스키 코드로 변환
+//                                Log.d(" " + String.valueOf(i) + " ", String.valueOf(line.charAt(i)) + ":" + String.valueOf(ch));
+//
+//
+//                                if (ch > 255) //skip // check hangul data (해결완료)
+//                                    q++;
+//                            }
+                            //  line2 = line.substring(q);
+                            // -> 2018/02/21 해결 완료, php 파일을 UTF-8(BOM 없이 저장)로 저장해야 JSON형식 앞에 "ï»¿"가 안 붙음
+                            // BOM : Byte Order Mark이라 하고, 인코딩된 문서 첫 머리에 사용하여 정확한 인코딩 방식을 알려주는 역할을 함
 
-
-                                if (ch > 255) //skip // check hangul data
-                                    q++;
-                            }
-                            line2 = line.substring(q);
-                            jsonHtml.append(line2);       // php를 통해 mysql에서 읽어온 데이터를 라인단위로 저장
+                            jsonHtml.append(line + "\n");       // php를 통해 mysql에서 읽어온 데이터를 라인단위로 저장
                             Log.d("json html", jsonHtml.toString());
                         }
                         br.close();

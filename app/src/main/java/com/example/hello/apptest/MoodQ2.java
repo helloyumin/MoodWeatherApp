@@ -342,14 +342,16 @@ public class MoodQ2 extends AppCompatActivity {
             }
             Log.d("userId", userId);
 
-            if (scoreResult != null) {
+            if (scoreResult.equals("1")) {
+                // 1이 넘어올 경우 DB접속에 성공했다는 뜻
                 Log.d("scoreResult : ", scoreResult);
                 Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
                 intent.putExtra("email", userId);
                 intent.putExtra("name", username);
                 startActivity(intent);
             } else {
-                Toast.makeText(getApplication(), "에러 발생", Toast.LENGTH_LONG);
+                Log.d("Error", scoreResult);
+                Toast.makeText(this, "에러 발생", Toast.LENGTH_LONG);
             }
 
             return 1;
