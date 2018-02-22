@@ -59,7 +59,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
 
         String type = params[0];
         String errorString;
-        String register_url = "http:/172.30.1.33/insert_test2.php";
+        String register_url = "http://192.168.0.23/insert_test2.php";
 
         if (type.equals("register")) {
             try {
@@ -91,7 +91,8 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                 if (httpURLConnection != null) {
                     httpURLConnection.setConnectTimeout(1000);
 
-                    if (connect_ok == true) {
+                    if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        connect_ok = true;
                         InputStream inputStream = httpURLConnection.getInputStream();
                         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                         String result = "";
@@ -141,10 +142,10 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
             // doInBackground() 메소드에서 작업이 끝나면 결과 파라미터를 리턴,
             // 그 리턴 값을 통해 스레드 작업이 끝났을 때의 동작 구현
             // 여기서는 결과를 팝업창에 전달해서 출력
-            if (connect_ok == true){
-                Toast.makeText(context, "서버 연결 성공", Toast.LENGTH_SHORT).show();
-            } else {
+            if (result == null){
                 Toast.makeText(context, "서버 연결 실패", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "서버 연결 성공", Toast.LENGTH_SHORT).show();
             }
           //  alertDialog.setMessage(result);
           //  alertDialog.show();

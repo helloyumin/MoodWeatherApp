@@ -19,7 +19,7 @@ import java.net.URL;
  * Created by hello on 2018-02-08.
  */
 
-/*쓰레드: 프로그램을 실행할 때, 프로그램 안에 존재하는 실행 코드들
+/*쓰레드: 프로그램을 실행할 때, 프로그램 안에 존재하는 실행 코드(작업)
           메인 쓰레드는 어플을 실행할 때 처음 생기며, 함부로 접근 불가능
           또한 메인 쓰레드에서만 UI 변경 가능
   핸들러: 메인 쓰레드를 함부로 접근 할 수 없기 때문에 서브 쓰레드(본인이 만든 쓰레드, UI 변경 불가능)에서
@@ -35,7 +35,7 @@ public class loginMysql extends Thread {
     String userId=null,userPw=null,url=null;
     Boolean connect_ok;
   //  String login_url="http://192.168.43.130/select_login.php";
-    String login_url="http://172.30.1.33/select_login.php?id=";      //your server IP
+    String login_url="http://192.168.0.23/select_login.php?id=";      //your server IP
      // String login_url="http://192.168.43.130/test_login.php";
 
     public loginMysql(String id,String pw,Context passed_mContext){

@@ -340,19 +340,18 @@ public class MoodQ2 extends AppCompatActivity {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-            Log.d("userId", userId);
-
-            if (scoreResult.equals("1")) {
-                // 1이 넘어올 경우 DB접속에 성공했다는 뜻
-                Log.d("scoreResult : ", scoreResult);
-                Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
-                intent.putExtra("email", userId);
-                intent.putExtra("name", username);
-                startActivity(intent);
-            } else {
-                Log.d("Error", scoreResult);
-                Toast.makeText(this, "에러 발생", Toast.LENGTH_LONG);
-            }
+                    if (scoreResult != null && scoreResult.equals("1")) {
+                        // 1이 넘어올 경우 DB에 데이터 전달 완료
+                        Log.d("scoreResult : ", scoreResult);
+                        Intent intent = new Intent(MoodQ2.this, MoodResult1.class);
+                        intent.putExtra("email", userId);
+                        intent.putExtra("name", username);
+                        startActivity(intent);
+                    } else {
+                        // scoreResult = null일 때, 즉 서버가 끊겨있을 때
+                        // 서버 연결 실패 메세지를 띄움(BackgroundWorker2.java)
+                    }
+          //  Log.d("userId", userId);
 
             return 1;
         }

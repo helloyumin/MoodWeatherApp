@@ -72,7 +72,7 @@ public class MoodResult2 extends AppCompatActivity {
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://172.30.1.33/select_music.php?id=" + userId);
+        task.execute("http://192.168.0.23/select_music.php?id=" + userId);
 
     }
 
@@ -196,7 +196,6 @@ public class MoodResult2 extends AppCompatActivity {
                 Log.d(TAG, "showResult : ", e);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
         }
     }
 }

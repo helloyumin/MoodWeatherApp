@@ -78,6 +78,7 @@ public class Register extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String checkId = "";
+
             try {
                 URL url = new URL(params[0]);
                 Log.d("URL", String.valueOf(url));
@@ -90,15 +91,12 @@ public class Register extends AppCompatActivity {
                     if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
                         connect_ok = true;
                         BufferedReader br = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
-                        int i = 0;
-                        for (;;){
-                            String line = br.readLine();
-                            if (line == null){
-                                System.out.println("STOP -> " + i);
-                                break;
-                            }
-                            System.out.println("SUCCESS -> " + line);
-                            i++;
+                            while (true){
+                                String line = br.readLine();
+                                if (line == null)
+                                    break;
+
+                           // System.out.println("SUCCESS -> " + line);
                             checkId += line;
                             Log.d("LINE", line);
                         }
@@ -120,7 +118,7 @@ public class Register extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if(connect_ok == true){
+            if(result != null){
                 Toast.makeText(getApplicationContext(), "서버 연결 성공", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
@@ -159,45 +157,40 @@ public class Register extends AppCompatActivity {
         return valid;
     }
 
+    // 질문: 서버는 연결되어있는 상태에서 데이터베이스 서버를 중지시키고 회원가입을 시도하면 "Skipped 245 frames!  The application may be doing too much work on its main thread"가 로그에 뜨는데
+    //      이럴 경우 앱에 어떠한 영향을 주고 해결방법에는 무엇이 있을까요?
     public void onReg(View view) {
         initialize();
         if (!validate()) {
             Toast.makeText(this, "회원가입 실패", Toast.LENGTH_LONG).show();
         } else {
-            CheckId task = new CheckId();
-            if (connect_ok == true) {
-                try {
-                    // 아이디 중복 체크
-                    testCheck = task.execute("http://172.30.1.33/checkid.php?id=" + str_email).get();
+            try {
+                CheckId task = new CheckId();
+                    testCheck = task.execute("http://192.168.0.23/checkid.php?id=" + str_email).get();
                     Log.d("CheckID: ", testCheck);
-                    idCode = Integer.parseInt(testCheck);
-                    Log.d("idCode", String.valueOf(idCode));
-                    // Toast.makeText(getApplicationContext(), testCheck, Toast.LENGTH_LONG).show();
-                    if (idCode == 1) {
-                        Toast.makeText(this, "아이디 중복", Toast.LENGTH_LONG).show();
-                    } else if (idCode == 0) {
-                        String type = "register";
-                        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-                        regResult = backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone).get();
-                        if (regResult != null) {
-                            Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_LONG).show();
-                            Intent regIntent = new Intent(Register.this, Login.class);
-                            startActivity(regIntent);
-                        } else {
-                            Toast.makeText(getApplication(), "에러 발생", Toast.LENGTH_LONG);
-                        }
+                // 아이디 중복 체크
+                if (testCheck.equals("1")) {
+                    Toast.makeText(this, "아이디 중복", Toast.LENGTH_LONG).show();
+                } else if (testCheck.equals("0")) {
+                    String type = "register";
+                    BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+                    regResult = backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone).get();
+                    if (regResult != null) {
+                        Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_LONG).show();
+                        Intent regIntent = new Intent(Register.this, Login.class);
+                        startActivity(regIntent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(getApplication(), "에러 발생", Toast.LENGTH_LONG);
                 }
-            } else {
-                // 이메일 중복 체크를 하려고 할 때 데이터베이스와 연결이 안 되어있을 때
-                Toast.makeText(getApplicationContext(), "오류 발생", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
+
     
     @Override
     // 뒤로가기 종료

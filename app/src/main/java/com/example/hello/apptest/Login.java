@@ -1,8 +1,10 @@
 package com.example.hello.apptest;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,13 +33,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     static EditText id, pwd;
     static public boolean login_state = false;
-    CheckBox auto_login;
+    static CheckBox auto_login;
     Button btn_help, btn_reg, btn_login;
-
-//    String JSONTag_id = "ID";
-//    String JSONTag_Passwd = "password";
+    static SharedPreferences setting;
+    static SharedPreferences.Editor editor;
     private BackPressCloseHandler backPressCloseHandler;
     static Context mContext;
+
+    //    String JSONTag_id = "ID";
+//    String JSONTag_Passwd = "password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +56,46 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         btn_help = findViewById(R.id.btn_help);
         btn_login = findViewById(R.id.btn_login);
         btn_reg = findViewById(R.id.btn_reg);
+        setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);
+        editor = setting.edit();
+
+        if (setting.getBoolean("Auto_Login_enabled", false)){
+            id.setText(setting.getString("ID", ""));
+            pwd.setText(setting.getString("PWD", ""));
+            auto_login.setChecked(true);
+        }
 
         btn_reg.setOnClickListener(this);
         btn_login.setOnClickListener(this);
         btn_help.setOnClickListener(this);
 
+        login_setup_listener();
+
         backPressCloseHandler = new BackPressCloseHandler(this);
 
+    }
+
+    public static void login_setup_listener(){
+        auto_login.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    String ID = id.getText().toString();
+                    String PWD = pwd.getText().toString();
+
+                    editor.putString("ID", ID);
+                    editor.putString("PWD", PWD);
+                    editor.putBoolean("Auto_Login_enabled", true);
+                    editor.commit();
+                } else {
+                    editor.remove("ID");
+                    editor.remove("PWD");
+                    editor.remove("Auto_Login_enabled");
+                    editor.clear();
+                    editor.commit();
+                }
+            }
+        });
     }
 
     @Override
@@ -66,6 +104,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             case R.id.btn_login:
                 if (id.getText().toString() != null && pwd.getText().toString() != null) {
                     login_proc(login_state);
+                    login_setup_listener();
                 } else
                     Toast.makeText(this, "", Toast.LENGTH_LONG).show();
                 break;
