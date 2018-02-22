@@ -169,9 +169,9 @@ public class Register extends AppCompatActivity {
                     testCheck = task.execute("http://192.168.0.23/checkid.php?id=" + str_email).get();
                     Log.d("CheckID: ", testCheck);
                 // 아이디 중복 체크
-                if (testCheck.equals("1")) {
+                if (testCheck != null && testCheck.equals("1")) {
                     Toast.makeText(this, "아이디 중복", Toast.LENGTH_LONG).show();
-                } else if (testCheck.equals("0")) {
+                } else if (testCheck != null && testCheck.equals("0")) {
                     String type = "register";
                     BackgroundWorker backgroundWorker = new BackgroundWorker(this);
                     regResult = backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone).get();
