@@ -36,7 +36,7 @@ public class BackgroundWorker2 extends AsyncTask<String, Void, String> {
         String errorString;
         String type = params[0];
         connect_ok = false;
-        String moodQ_url = "http://192.168.0.23/insert_score.php";
+        String moodQ_url = "http://172.30.1.102/insert_score.php";
 
         if (type.equals("moodQ")) {
             try {

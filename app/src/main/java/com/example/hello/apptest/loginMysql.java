@@ -35,18 +35,18 @@ public class loginMysql extends Thread {
     String userId=null,userPw=null,url=null;
     Boolean connect_ok;
   //  String login_url="http://192.168.43.130/select_login.php";
-    String login_url="http://192.168.0.23/select_login.php?id=";      //your server IP
+    String login_url="http://172.30.1.102/select_login.php?id=";      //your server IP
      // String login_url="http://192.168.43.130/test_login.php";
 
     public loginMysql(String id,String pw,Context passed_mContext){
         mHandler=new Handler();
         userId = id;
         userPw=pw;
-        url=login_url+userId;
+        url=login_url+userId+"&pw="+userPw;
         mContext=passed_mContext;
         connect_ok=false;
 
-        // thread를 실행할 때 id와 pw, php의 URL을 넘겨주고 URL에는 id값을 get방식으로 넘기기 위해 userId를 추가
+        // thread를 실행할 때 id와 pw, php의 URL을 넘겨주고 / URL에는 id값을 get방식으로 넘기기 위해 userId를 추가
     }
     /**
      * Calls the <code>run()</code> method of the Runnable object the receiver

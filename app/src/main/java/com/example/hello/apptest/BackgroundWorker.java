@@ -59,7 +59,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
 
         String type = params[0];
         String errorString;
-        String register_url = "http://192.168.0.23/insert_test2.php";
+        String register_url = "http://172.30.1.102/insert_test2.php";
 
         if (type.equals("register")) {
             try {

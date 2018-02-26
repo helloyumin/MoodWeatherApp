@@ -61,7 +61,7 @@ public class MoodResult2 extends AppCompatActivity {
         setContentView(R.layout.activity_mood_result2);
 
         tv_result2 = (TextView) findViewById(R.id.tv_result2);
-        tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시 뷰
+      //  tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시 뷰
         lv_music = (ListView) findViewById(R.id.lv_music);
         mArraylist = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class MoodResult2 extends AppCompatActivity {
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_music.php?id=" + userId);
+        task.execute("http://172.30.1.102/select_music.php?id=" + userId);
 
     }
 
@@ -92,11 +92,11 @@ public class MoodResult2 extends AppCompatActivity {
             super.onPostExecute(result);
 
             progressDialog.dismiss();
-            tv_music.setText(result);
+//            tv_music.setText(result);
             Log.d(TAG, "response - "+result);
 
             if(result == null){
-                tv_music.setText(errorString);
+              //  tv_music.setText(errorString);
                 Toast.makeText(getApplicationContext(), "서버 연결 실패", Toast.LENGTH_SHORT).show();
             }
             else{

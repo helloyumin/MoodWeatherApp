@@ -40,7 +40,6 @@ public class Register extends AppCompatActivity {
     private String str_email, str_pwd, str_name, str_phone;
     private BackPressCloseHandler backPressCloseHandler;
     String testCheck;
-    int idCode;
     Boolean connect_ok = false;
     String regResult;
 
@@ -91,6 +90,7 @@ public class Register extends AppCompatActivity {
                     if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
                         connect_ok = true;
                         BufferedReader br = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+                        // 무한 대기에 걸리는 부분, PHP timeout 설정
                             while (true){
                                 String line = br.readLine();
                                 if (line == null)
@@ -127,7 +127,7 @@ public class Register extends AppCompatActivity {
     }
 
     public void initialize(){
-        str_email = email.getText().toString().trim();
+        str_email = email.getText().toString().toLowerCase().trim();
         str_pwd = pwd.getText().toString().trim();
         str_name = name.getText().toString().trim();
         str_phone = phone.getText().toString().trim();
@@ -166,7 +166,7 @@ public class Register extends AppCompatActivity {
         } else {
             try {
                 CheckId task = new CheckId();
-                    testCheck = task.execute("http://192.168.0.23/checkid.php?id=" + str_email).get();
+                    testCheck = task.execute("http://172.30.1.102/checkid.php?id=" + str_email).get();
                     Log.d("CheckID: ", testCheck);
                 // 아이디 중복 체크
                 if (testCheck != null && testCheck.equals("1")) {
@@ -175,6 +175,7 @@ public class Register extends AppCompatActivity {
                     String type = "register";
                     BackgroundWorker backgroundWorker = new BackgroundWorker(this);
                     regResult = backgroundWorker.execute(type, str_email, str_pwd, str_name, str_phone).get();
+                    Log.d("이메일 소문자", str_email);
                     if (regResult != null) {
                         Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_LONG).show();
                         Intent regIntent = new Intent(Register.this, Login.class);

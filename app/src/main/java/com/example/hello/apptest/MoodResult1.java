@@ -69,7 +69,7 @@ public class MoodResult1 extends AppCompatActivity {
         username = getResult.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://192.168.0.23/select_word.php?id="+userId);
+        task.execute("http://172.30.1.102/select_word.php?id="+userId);
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override

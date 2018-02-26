@@ -42,16 +42,14 @@
                     android:id="@+id/tv_q1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
                     android:text="1. 나의 삶에 얼마나 만족하는가?" />
 
                 <RadioGroup
                     android:id="@+id/rg1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:paddingBottom="10dp"
-                    tools:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
 
                     <RadioButton
                         android:id="@+id/rb1"
@@ -89,6 +87,7 @@
                         android:text="5" />
 
                 </RadioGroup>
+
 
                 <TextView
                     android:id="@+id/tv_q2"
