@@ -47,7 +47,10 @@ public class MoodResult2 extends AppCompatActivity {
     ListView lv_music;
     String mJsonString;
 
+    URLApplication urlApplication;
+
     String userscore, todayscore, username, userId;
+    String moodResultURL2;
     int flag;
     Intent getIntent;
     TextView tv_result2;
@@ -59,6 +62,9 @@ public class MoodResult2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood_result2);
+
+        urlApplication = (URLApplication)getApplicationContext();
+        moodResultURL2 = urlApplication.getMoodResultURL2();
 
         tv_result2 = (TextView) findViewById(R.id.tv_result2);
       //  tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시 뷰
@@ -72,7 +78,7 @@ public class MoodResult2 extends AppCompatActivity {
         username = getIntent.getStringExtra("name");
 
         GetScore task = new GetScore();
-        task.execute("http://172.30.1.102/select_music.php?id=" + userId);
+        task.execute(moodResultURL2 + userId);
 
     }
 

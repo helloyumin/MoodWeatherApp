@@ -34,18 +34,20 @@ public class loginMysql extends Thread {
     Handler mHandler;
     String userId=null,userPw=null,url=null;
     Boolean connect_ok;
-  //  String login_url="http://192.168.43.130/select_login.php";
-    String login_url="http://172.30.1.102/select_login.php?id=";      //your server IP
-     // String login_url="http://192.168.43.130/test_login.php";
+    URLApplication urlApplication;
+    String login_url;
+  //  String login_url="http://172.30.1.102/select_login.php?id=";      //your server IP
+
 
     public loginMysql(String id,String pw,Context passed_mContext){
         mHandler=new Handler();
+        mContext=passed_mContext;
+        urlApplication = (URLApplication)passed_mContext.getApplicationContext();
+        login_url = urlApplication.getLoginURL();
         userId = id;
         userPw=pw;
         url=login_url+userId+"&pw="+userPw;
-        mContext=passed_mContext;
         connect_ok=false;
-
         // thread를 실행할 때 id와 pw, php의 URL을 넘겨주고 / URL에는 id값을 get방식으로 넘기기 위해 userId를 추가
     }
     /**
@@ -82,8 +84,6 @@ public class loginMysql extends Thread {
                             String line = br.readLine();
                             if (line == null)
                                 break;
-
-
 //                            String line2;
 //                            Log.d("buffer ", "[" + line + "]\n");
 //                            Log.d("length ", String.valueOf(line.length()));

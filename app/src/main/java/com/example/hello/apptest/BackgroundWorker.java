@@ -43,23 +43,23 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
     * */
 
     Context context;
-    AlertDialog alertDialog;
     Boolean connect_ok;
     HttpURLConnection httpURLConnection;
-
     BackgroundWorker(Context ctx) {
         context = ctx;
     }
+    URLApplication urlApplication;
 
     @Override
     protected String doInBackground(String... params) {
         // 네트워크 통신을 작성하는 공간
         // UI스레드와 상관없이 백그라운드에서 작업을 실행하는 비동기방식으로 작동
         // 비동기방식: 데이터를 주고 받을 때 미리 약속된 신호에 의해 통신하는 방식
-
+        urlApplication = (URLApplication)context.getApplicationContext();
+        String register_url = urlApplication.getRegURL();
         String type = params[0];
         String errorString;
-        String register_url = "http://172.30.1.102/insert_test2.php";
+        //String register_url = "http://192.168.0.23/insert_test2.php";
 
         if (type.equals("register")) {
             try {

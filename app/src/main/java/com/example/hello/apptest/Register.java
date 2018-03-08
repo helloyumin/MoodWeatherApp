@@ -1,36 +1,21 @@
 package com.example.hello.apptest;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 
 public class Register extends AppCompatActivity {
@@ -41,7 +26,8 @@ public class Register extends AppCompatActivity {
     private BackPressCloseHandler backPressCloseHandler;
     String testCheck;
     Boolean connect_ok = false;
-    String regResult;
+    String regResult, idchkURL;
+    URLApplication urlApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +41,8 @@ public class Register extends AppCompatActivity {
         backPressCloseHandler = new BackPressCloseHandler(this);
         btn_submit = (Button) findViewById(R.id.btn_submit);
         btn_main = (Button) findViewById(R.id.btn_main);
+        urlApplication = (URLApplication)getApplicationContext();
+        idchkURL = urlApplication.getIdchkURL();
 
         btn_main.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +154,8 @@ public class Register extends AppCompatActivity {
         } else {
             try {
                 CheckId task = new CheckId();
-                    testCheck = task.execute("http://172.30.1.102/checkid.php?id=" + str_email).get();
+                //    testCheck = task.execute("http://172.30.1.102/checkid.php?id=" + str_email).get();
+                testCheck = task.execute(idchkURL + str_email).get();
                     Log.d("CheckID: ", testCheck);
                 // 아이디 중복 체크
                 if (testCheck != null && testCheck.equals("1")) {
@@ -199,18 +188,5 @@ public class Register extends AppCompatActivity {
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
-
-
-//        JSONObject obj = new JSONObject();
-//        try {
-//            obj.put("user_email", email);
-//            obj.put("user_password", pwd);
-//            obj.put("user_name", name);
-//            obj.put("user_phone", phone);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        String regData = obj.toString();
-//        Toast.makeText(getApplicationContext(), regData, Toast.LENGTH_LONG).show();
 
 }
