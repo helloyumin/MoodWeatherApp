@@ -4,6 +4,7 @@ package com.example.hello.apptest;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ public class MoodResult1 extends AppCompatActivity {
     URLApplication urlApplication;
 
     TextView tv_word, tv_score;
+    Button btn_logout;
     String moodResultURL1, word, username, userId, todayscore;
     Intent getResult;
     private BackPressCloseHandler backPressCloseHandler;        // 뒤로가기 2번 누르면 종료
@@ -62,7 +64,7 @@ public class MoodResult1 extends AppCompatActivity {
         connect_ok = false;
         urlApplication = (URLApplication)getApplicationContext();
         moodResultURL1 = urlApplication.getMoodResultURL1();
-        backPressCloseHandler = new BackPressCloseHandler(this);
+        btn_logout = (Button) findViewById(R.id.btn_logout1);
         ImageView iv_weather = (ImageView) findViewById(R.id.iv_weather);
         tv_score = (TextView) findViewById(R.id.tv_score);
         tv_word = (TextView) findViewById(R.id.tv_word);
@@ -75,6 +77,20 @@ public class MoodResult1 extends AppCompatActivity {
         GetScore task = new GetScore();
         task.execute(moodResultURL1+userId);
 
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences preferences = getSharedPreferences("pref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.clear();
+                editor.commit();
+                Toast.makeText(getApplicationContext(), "로그아웃 되셨습니다.", Toast.LENGTH_LONG).show();
+                Intent logoutIntent = new Intent(MoodResult1.this, Login.class);
+                startActivity(logoutIntent);
+            }
+        });
+
+
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +101,8 @@ public class MoodResult1 extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        backPressCloseHandler = new BackPressCloseHandler(this);
     }
 
     private class GetScore extends AsyncTask<String, Void, String> {

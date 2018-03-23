@@ -9,12 +9,12 @@ import android.content.res.Configuration;
 
 public class URLApplication extends Application {
 
-    private String loginURL = "http://192.168.0.23/select_login.php?id=";
-    private String regURL = "http://192.168.0.23/insert_test2.php";
-    private String idchkURL = "http://192.168.0.23/checkid.php?id=";
-    private String moodQURL = "http://192.168.0.23/insert_score.php";
-    private String moodResultURL1 = "http://192.168.0.23/select_word.php?id=";
-    private String moodResultURL2 = "http://192.168.0.23/select_music.php?id=";
+    private String loginURL = "http://172.30.1.35/select_login.php?id=";
+    private String regURL = "http://172.30.1.35/insert_test2.php";
+    private String idchkURL = "http://172.30.1.35/checkid.php?id=";
+    private String moodQURL = "http://172.30.1.35/insert_score.php";
+    private String moodResultURL1 = "http://172.30.1.35/select_word.php?id=";
+    private String moodResultURL2 = "http://172.30.1.35/select_music.php?id=";
 
     public String getLoginURL(){
         return loginURL;

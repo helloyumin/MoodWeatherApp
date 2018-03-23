@@ -5,6 +5,7 @@ package com.example.hello.apptest;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +55,7 @@ public class MoodResult2 extends AppCompatActivity {
     int flag;
     Intent getIntent;
     TextView tv_result2;
+    Button btn_logout;
 
     Boolean connect_ok;
 
@@ -66,6 +68,7 @@ public class MoodResult2 extends AppCompatActivity {
         urlApplication = (URLApplication)getApplicationContext();
         moodResultURL2 = urlApplication.getMoodResultURL2();
 
+        btn_logout = (Button)findViewById(R.id.btn_logout2);
         tv_result2 = (TextView) findViewById(R.id.tv_result2);
       //  tv_music = (TextView) findViewById(R.id.tv_music);          // 이 텍스트뷰는 삭제예정, 에러 보기 위한 임시 뷰
         lv_music = (ListView) findViewById(R.id.lv_music);
@@ -79,6 +82,19 @@ public class MoodResult2 extends AppCompatActivity {
 
         GetScore task = new GetScore();
         task.execute(moodResultURL2 + userId);
+
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    SharedPreferences preferences = getSharedPreferences("pref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.clear();
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), "로그아웃 되셨습니다.", Toast.LENGTH_LONG).show();
+                    Intent logoutIntent = new Intent(MoodResult2.this, Login.class);
+                    startActivity(logoutIntent);
+                }
+        });
 
     }
 

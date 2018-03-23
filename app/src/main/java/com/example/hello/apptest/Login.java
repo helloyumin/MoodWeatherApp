@@ -29,19 +29,22 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.HashMap;
 
-public class Login extends AppCompatActivity implements View.OnClickListener {
+public class Login extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+
+    final String TAG = this.getClass().getName();
 
     static EditText id, pwd;
     static public boolean login_state = false;
     static CheckBox auto_login;
+    static String autoID;
+    static String autoPWD;
+    static boolean loginChecked;
     Button btn_help, btn_reg, btn_login;
-    static SharedPreferences setting;
+    public static SharedPreferences pref;
     static SharedPreferences.Editor editor;
     private BackPressCloseHandler backPressCloseHandler;
     static Context mContext;
 
-    //    String JSONTag_id = "ID";
-//    String JSONTag_Passwd = "password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,50 +55,54 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         id = findViewById(R.id.et_id);
         pwd = findViewById(R.id.et_pwd1);
+
         auto_login = findViewById(R.id.check_auto);
+        loginChecked = auto_login.isChecked();
+        Log.d(TAG, "checkflag: "+ loginChecked);
+        auto_login.setOnCheckedChangeListener(this);
+
         btn_help = findViewById(R.id.btn_help);
         btn_login = findViewById(R.id.btn_login);
         btn_reg = findViewById(R.id.btn_reg);
-        setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);
-        editor = setting.edit();
-
-        if (setting.getBoolean("Auto_Login_enabled", false)){
-            id.setText(setting.getString("ID", ""));
-            pwd.setText(setting.getString("PWD", ""));
-            auto_login.setChecked(true);
-        }
 
         btn_reg.setOnClickListener(this);
         btn_login.setOnClickListener(this);
         btn_help.setOnClickListener(this);
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (auto_login.isChecked()){
+                    savePreference();
+                } else {
+                    removePreference();
+                }
 
-        login_setup_listener();
+                login_proc(login_state);
+            }
+        });
+
+        getPreferences();
+
+        if (auto_login.isChecked()){
+            login_proc(login_state);
+        }
+
+//        pref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+//        editor = pref.edit();
+//        autoID = pref.getString("username", "");
+//        autoPWD = pref.getString("password", "");
+//        Log.d(TAG, pref.getString("username", ""));
+//        Log.d(TAG, pref.getString("password", ""));
+//
+//        loginChecked = pref.getBoolean("autoChecked", false);
+//        if (loginChecked){
+//            id.setText(autoID);
+//            pwd.setText(autoPWD);
+//            auto_login.setChecked(true);
+//        }
 
         backPressCloseHandler = new BackPressCloseHandler(this);
 
-    }
-
-    public static void login_setup_listener(){
-        auto_login.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    String ID = id.getText().toString();
-                    String PWD = pwd.getText().toString();
-
-                    editor.putString("ID", ID);
-                    editor.putString("PWD", PWD);
-                    editor.putBoolean("Auto_Login_enabled", true);
-                    editor.commit();
-                } else {
-                    editor.remove("ID");
-                    editor.remove("PWD");
-                    editor.remove("Auto_Login_enabled");
-                    editor.clear();
-                    editor.commit();
-                }
-            }
-        });
     }
 
     @Override
@@ -104,9 +111,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             case R.id.btn_login:
                 if (id.getText().toString() != null && pwd.getText().toString() != null) {
                     login_proc(login_state);
-                    login_setup_listener();
                 } else
-                    Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "오류 발생", Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_help:
                 Intent intent1 = new Intent(Login.this, Help.class);
@@ -119,7 +125,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-
     void login_proc(boolean login) { //Login
         if (!login) {
             String str_id = id.getText().toString();
@@ -130,7 +135,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    static public void result_login(String result, String pwd, String email, String name, int flag) {
+    static public void result_login(String result, String pw, String email, String name, int flag) {
         // flag는 오늘 설문지를 했는지 안 했는지 확인하는 용(오늘 점수가 있는지 확인) / 0 = 안 했음, 1 = 했음 100-connection error
         loginMysql.active = false;
         if (result.equals("false")) {
@@ -140,20 +145,20 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             Toast.makeText(mContext, "서버 에러", Toast.LENGTH_LONG).show();
         }
         else {
-            if (pwd.equals(result)) {
+            if (pw.equals(result)) {
                 if( flag == 0 ){ // 오늘 설문지를 안 했을 때
-                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
-                    Intent intent3 = new Intent(mContext, MoodQ.class);
-                    intent3.putExtra("name", name);
-                    intent3.putExtra("email", email);
-                     mContext.startActivity(intent3);
+                        Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
+                        Intent intent3 = new Intent(mContext, MoodQ.class);
+                        intent3.putExtra("name", name);
+                        intent3.putExtra("email", email);
+                        mContext.startActivity(intent3);
                 } else if(flag == 1) { // 오늘 이미 설문지를 했을 때
-                    Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
-                    Intent intent4 = new Intent(mContext, MoodResult1.class);
-                    intent4.putExtra("name", name);
-                    intent4.putExtra("email", email);
-                    mContext.startActivity((intent4));
-                }
+                        Toast.makeText(mContext, name + "님 로그인 되었습니다.", Toast.LENGTH_LONG).show();
+                        Intent intent4 = new Intent(mContext, MoodResult1.class);
+                        intent4.putExtra("name", name);
+                        intent4.putExtra("email", email);
+                        mContext.startActivity((intent4));
+                        }
             } else {
                 Toast.makeText(mContext, "비밀번호가 틀렸습니다.", Toast.LENGTH_LONG).show();
             }
@@ -166,29 +171,69 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         backPressCloseHandler.onBackPressed();
     }
 
+    public void getPreferences(){
+        SharedPreferences preferences = getSharedPreferences("pref", MODE_PRIVATE);
+        String autoid = preferences.getString("id", "");
+        String autopwd = preferences.getString("pwd", "");
+        String str_check = preferences.getString("check", "");
 
+        if (!"".equals(autoid) && !"".equals(autopwd)){
+            id.setText(autoid);
+            pwd.setText(autopwd);
+        }
 
+        if ("0".equals(str_check)){
+            auto_login.setChecked(true);
+        }
+    }
 
+    private void savePreference(){
+        SharedPreferences preferences = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("id", id.getText().toString());
+        editor.putString("pwd", pwd.getText().toString());
 
+        if (auto_login.isChecked()){
+            editor.putString("check", "0");
+        }
 
+        editor.commit();
+    }
 
+    private void removePreference(){
+        SharedPreferences preferences = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        loginChecked = isChecked;
+        Log.d(TAG, "checkFlag1: " + loginChecked);
+    }
 
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        if (auto_login.isChecked()){
+//            pref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+//            editor = pref.edit();
+//
+//            editor.putString("username", id.getText().toString());
+//            editor.putString("password", pwd.getText().toString());
+//            editor.putBoolean("autoChecked", true);
+//
+//            editor.commit();
+//        } else {
+//            pref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+//            editor = pref.edit();
+//            editor.clear();
+//            editor.commit();
+//        }
+//    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    public void loginRequest(){
+    //    public void loginRequest(){
 //        // Send Json to server
 //        JSONObject jsonObject = new JSONObject();
 //        try {
