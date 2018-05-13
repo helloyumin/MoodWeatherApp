@@ -351,8 +351,6 @@ public class MoodQ2 extends AppCompatActivity {
                         // scoreResult = null일 때, 즉 서버가 끊겨있을 때
                         // 서버 연결 실패 메세지를 띄움(BackgroundWorker2.java)
                     }
-          //  Log.d("userId", userId);
-
             return 1;
         }
 

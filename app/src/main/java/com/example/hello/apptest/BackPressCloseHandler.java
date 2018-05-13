@@ -6,10 +6,6 @@ import android.app.Activity;
 import android.os.Build;
 import android.widget.Toast;
 
-/**
- * Created by hello on 2018-02-04.
- */
-
 public class BackPressCloseHandler {
 
     private long backKeyPressedTime = 0;

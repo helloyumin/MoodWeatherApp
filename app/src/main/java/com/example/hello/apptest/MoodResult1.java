@@ -50,9 +50,12 @@ public class MoodResult1 extends AppCompatActivity {
 
     URLApplication urlApplication;
 
-    TextView tv_word, tv_score;
+    TextView tv_word;
+    TextView tv_score;
+    ImageView iv_weather;
     Button btn_logout;
     String moodResultURL1, word, username, userId, todayscore;
+    int weatherCode, toScore;
     Intent getResult;
     private BackPressCloseHandler backPressCloseHandler;        // 뒤로가기 2번 누르면 종료
 
@@ -65,12 +68,12 @@ public class MoodResult1 extends AppCompatActivity {
         urlApplication = (URLApplication)getApplicationContext();
         moodResultURL1 = urlApplication.getMoodResultURL1();
         btn_logout = (Button) findViewById(R.id.btn_logout1);
-        ImageView iv_weather = (ImageView) findViewById(R.id.iv_weather);
+        iv_weather = (ImageView) findViewById(R.id.iv_weather);
         tv_score = (TextView) findViewById(R.id.tv_score);
         tv_word = (TextView) findViewById(R.id.tv_word);
         Button btn_next = (Button) findViewById(R.id.btn_next);
-
         getResult = getIntent();
+        Log.d("weatherCode", String.valueOf(weatherCode));
         userId = getResult.getStringExtra("email");
         username = getResult.getStringExtra("name");
 
@@ -196,6 +199,29 @@ public class MoodResult1 extends AppCompatActivity {
                     Log.d("todayScore: ", todayscore);
                     word = hashMap.get(TAG_WORD);
                     Log.d("word:", word);
+
+                    toScore = Integer.parseInt(todayscore);
+                    Log.d("toScore", String.valueOf(toScore));
+
+                    if (toScore >= 22.5 ){
+                        weatherCode = 1;
+                    } else if(toScore >= 15){
+                        weatherCode =2;
+                    } else if(weatherCode >= 7.5){
+                        weatherCode = 3;
+                    } else {
+                        weatherCode = 4;
+                    }
+
+                    if (weatherCode == 1){
+                        iv_weather.setImageResource(R.drawable.sunny);
+                    } else if(weatherCode == 2) {
+                        iv_weather.setImageResource(R.drawable.clouds_1);
+                    } else if (weatherCode == 3){
+                        iv_weather.setImageResource(R.drawable.clouds);
+                    } else if (weatherCode == 4){
+                        iv_weather.setImageResource(R.drawable.umbrellas);
+                    }
 
                     tv_score.setText(username + "님의 점수는 " + todayscore + "점 입니다.");
                     tv_word.setText(word);

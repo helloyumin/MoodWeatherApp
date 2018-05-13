@@ -5,8 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
         android:name=".URLApplication"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -24,7 +24,8 @@
         <activity android:name=".MoodQ" />
         <activity android:name=".MoodResult1" />
         <activity android:name=".MoodResult2" />
-        <activity android:name=".MoodQ2"></activity>
+        <activity android:name=".MoodQ2" />
+        <activity android:name=".YouTubePlayerPage"></activity>
     </application>
 
 </manifest>

@@ -3,8 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
     <TextView
         android:id="@+id/m2"
         android:layout_width="0dp"
@@ -12,6 +10,5 @@
         android:layout_margin="5dp"
         android:layout_weight="4"
         android:padding="5dp" />
-
 
 </LinearLayout>

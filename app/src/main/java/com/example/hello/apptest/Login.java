@@ -36,12 +36,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Co
     static EditText id, pwd;
     static public boolean login_state = false;
     static CheckBox auto_login;
-    static String autoID;
-    static String autoPWD;
     static boolean loginChecked;
     Button btn_help, btn_reg, btn_login;
-    public static SharedPreferences pref;
-    static SharedPreferences.Editor editor;
     private BackPressCloseHandler backPressCloseHandler;
     static Context mContext;
 
@@ -86,20 +82,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Co
         if (auto_login.isChecked()){
             login_proc(login_state);
         }
-
-//        pref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-//        editor = pref.edit();
-//        autoID = pref.getString("username", "");
-//        autoPWD = pref.getString("password", "");
-//        Log.d(TAG, pref.getString("username", ""));
-//        Log.d(TAG, pref.getString("password", ""));
-//
-//        loginChecked = pref.getBoolean("autoChecked", false);
-//        if (loginChecked){
-//            id.setText(autoID);
-//            pwd.setText(autoPWD);
-//            auto_login.setChecked(true);
-//        }
 
         backPressCloseHandler = new BackPressCloseHandler(this);
 
@@ -212,68 +194,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Co
         loginChecked = isChecked;
         Log.d(TAG, "checkFlag1: " + loginChecked);
     }
-
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        if (auto_login.isChecked()){
-//            pref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-//            editor = pref.edit();
-//
-//            editor.putString("username", id.getText().toString());
-//            editor.putString("password", pwd.getText().toString());
-//            editor.putBoolean("autoChecked", true);
-//
-//            editor.commit();
-//        } else {
-//            pref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-//            editor = pref.edit();
-//            editor.clear();
-//            editor.commit();
-//        }
-//    }
-
-    //    public void loginRequest(){
-//        // Send Json to server
-//        JSONObject jsonObject = new JSONObject();
-//        try {
-//            jsonObject.put(JSONTag_id,id);
-//            jsonObject.put(JSONTag_Passwd,pwd);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        loginResponse(jsonObject);
-//
-//    }
-//
-//    public void loginResponse(JSONObject loginRes) {
-//            // get reply
-////        try {
-////            String loginResString = loginRes.getString(JSONTag_id);
-////            String loginResString1 = loginRes.getString(JSONTag_Passwd);
-////            Log.d("JSON id",loginResString);
-////            Log.d("JSON pwd",loginResString1);
-////
-////        } catch (JSONException e) {
-////            e.printStackTrace();
-////        }
-//            try {
-//                final Object o = loginRes.get(JSONTag_id);
-//                final Object o1 = loginRes.get(JSONTag_Passwd);
-//                Log.d("id",o.toString());
-//                Log.d("pwd",o1.toString());
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//           // 질문 : get과 getString의 차이는 무엇인가요?
-//           // 차이점 : getString은 변수의 value만 가져오고 get은 변수의 object 전체(value, hashcode, 기타 등등)을 가져온다.
-//            String login_data = loginRes.toString();
-//            Log.d("login data",login_data);
-//            Toast.makeText(getApplication(), login_data, Toast.LENGTH_LONG).show();
-//            Intent intent3 = new Intent(Login.this, MoodQ.class);
-//            intent3.putExtra("LOGIN", login_data);
-//            startActivity(intent3);
-//    }
 
 
 }
